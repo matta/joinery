@@ -7,7 +7,7 @@ use accesskit::Role;
 use kurbo::Affine;
 use smallvec::{smallvec, SmallVec};
 use tracing::{trace, trace_span, warn, Span};
-use vello::peniko::{BlendMode, Color, Fill, Gradient};
+use peniko::{BlendMode, Color, Fill, Gradient};
 use vello::Scene;
 
 use crate::kurbo::RoundedRectRadii;

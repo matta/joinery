@@ -9,7 +9,7 @@ use accesskit::Role;
 use kurbo::Affine;
 use smallvec::{smallvec, SmallVec};
 use tracing::{trace_span, Span};
-use vello::peniko::BlendMode;
+use peniko::BlendMode;
 use vello::Scene;
 
 use crate::kurbo::{Point, Rect, Size, Vec2};

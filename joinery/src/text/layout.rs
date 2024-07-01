@@ -9,7 +9,7 @@ use kurbo::{Line, Point, Rect, Size};
 use parley::layout::{Alignment, Cursor};
 use parley::style::{FontFamily, GenericFamily};
 use parley::{Layout, LayoutContext};
-use vello::peniko::{Brush, Color};
+use peniko::{Brush, Color};
 
 use crate::PaintCtx;
 

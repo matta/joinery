@@ -6,7 +6,7 @@
 use std::{ops::Deref, sync::Arc};
 
 use parley::context::RangedBuilder;
-use vello::peniko::Brush;
+use peniko::Brush;
 
 use super::attribute::Link;
 

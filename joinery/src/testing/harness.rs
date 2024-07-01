@@ -5,16 +5,6 @@
 
 use std::num::NonZeroUsize;
 
-use image::io::Reader as ImageReader;
-use image::{Rgba, RgbaImage};
-use vello::util::RenderContext;
-use vello::{block_on_wgpu, RendererOptions};
-use wgpu::{
-    BufferDescriptor, BufferUsages, CommandEncoderDescriptor, Extent3d, ImageCopyBuffer,
-    TextureDescriptor, TextureFormat, TextureUsages,
-};
-use winit::event::Ime;
-
 use super::screenshots::get_image_diff;
 use super::snapshot_utils::get_cargo_workspace;
 use crate::action::Action;

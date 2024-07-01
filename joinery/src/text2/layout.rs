@@ -11,7 +11,7 @@ use parley::fontique::{Style, Weight};
 use parley::layout::{Alignment, Cursor};
 use parley::style::{Brush as BrushTrait, FontFamily, FontStack, GenericFamily, StyleProperty};
 use parley::{FontContext, Layout, LayoutContext};
-use vello::peniko::{self, Color, Gradient};
+use peniko::{self, Color, Gradient};
 use vello::Scene;
 
 use super::{Link, TextStorage};

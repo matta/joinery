@@ -8,7 +8,7 @@ use accesskit::Role;
 use kurbo::Affine;
 use smallvec::SmallVec;
 use tracing::{trace, trace_span, Span};
-use vello::peniko::{BlendMode, Image as ImageBuf};
+use peniko::{BlendMode, Image as ImageBuf};
 use vello::Scene;
 
 use crate::widget::{FillStrat, WidgetMut, WidgetRef};
@@ -129,7 +129,7 @@ impl Widget for Image {
 // --- MARK: TESTS ---
 #[cfg(test)]
 mod tests {
-    use vello::peniko::Format;
+    use peniko::Format;
 
     use super::*;
     use crate::assert_render_snapshot;
@@ -139,7 +139,7 @@ mod tests {
     #[test]
     fn empty_paint() {
         // TODO - Blob::empty() function?
-        let image_data = ImageBuf::new(Vec::new().into(), vello::peniko::Format::Rgba8, 0, 0);
+        let image_data = ImageBuf::new(Vec::new().into(), peniko::Format::Rgba8, 0, 0);
 
         let image_widget = Image::new(image_data);
         let mut harness = TestHarness::create(image_widget);

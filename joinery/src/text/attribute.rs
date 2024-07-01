@@ -9,7 +9,7 @@ use parley::{
     fontique::{Style, Weight},
     style::{FontFamily, StyleProperty},
 };
-use vello::peniko::{Brush, Color};
+use peniko::{Brush, Color};
 
 use super::font_descriptor::FontDescriptor;
 

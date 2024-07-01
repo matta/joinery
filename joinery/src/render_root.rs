@@ -7,7 +7,7 @@ use accesskit::{ActionRequest, NodeBuilder, Tree, TreeUpdate};
 use kurbo::Affine;
 use parley::{FontContext, LayoutContext};
 use tracing::{debug, info_span, warn};
-use vello::peniko::{Color, Fill};
+use peniko::{Color, Fill};
 use vello::Scene;
 use winit::keyboard::{KeyCode, PhysicalKey};
 

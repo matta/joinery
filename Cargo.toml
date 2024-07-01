@@ -1,0 +1,31 @@
+[workspace]
+resolver = "2"
+members = [
+    "joinery",
+]
+
+[workspace.package]
+edition = "2021"
+# Keep in sync with RUST_MIN_VER in .github/workflows/ci.yml, with the
+# relevant README.md files.
+rust-version = "1.77"
+license = "Apache-2.0"
+repository = "https://github.com/matta/joinery"
+homepage = "https://github.com/matta/joinery"
+
+[workspace.lints]
+clippy.semicolon_if_nothing_returned = "warn"
+# Remove assigning_clones once it's allowed by default in stable Rust
+# https://github.com/rust-lang/rust-clippy/pull/12779
+clippy.assigning_clones = "allow"
+
+[workspace.dependencies]
+masonry = { version = "0.2.0", path = "masonry" }
+kurbo = "0.11.0"
+peniko = "0.1.1"
+tracing = { version = "0.1.40", default-features = false }
+smallvec = "1.13.2"
+dpi = "0.1.1"
+fnv = "1.0.7"
+bitflags = "2.5.0"
+accesskit = "0.15.0"

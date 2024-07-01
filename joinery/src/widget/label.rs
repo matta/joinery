@@ -9,7 +9,7 @@ use parley::layout::Alignment;
 use parley::style::{FontFamily, FontStack};
 use smallvec::SmallVec;
 use tracing::{trace, trace_span, Span};
-use vello::peniko::BlendMode;
+use peniko::BlendMode;
 use vello::Scene;
 
 use crate::text2::{TextBrush, TextLayout, TextStorage};

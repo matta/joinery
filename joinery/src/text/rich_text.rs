@@ -9,7 +9,7 @@ use std::sync::Arc;
 use parley::context::RangedBuilder;
 use parley::fontique::{Style, Weight};
 use parley::style::FontFamily;
-use vello::peniko::{Brush, Color};
+use peniko::{Brush, Color};
 
 use super::attribute::{Attribute, AttributeSpans, Link};
 use super::font_descriptor::FontDescriptor;

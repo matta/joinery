@@ -90,8 +90,6 @@
 pub use cursor_icon::{CursorIcon, ParseError as CursorIconParseError};
 pub use dpi;
 pub use kurbo;
-pub use parley;
-pub use vello;
 
 #[macro_use]
 mod util;
@@ -126,9 +124,8 @@ pub use event::{
     StatusChange, TextEvent, WindowEvent, WindowTheme,
 };
 pub use kurbo::{Affine, Insets, Point, Rect, Size, Vec2};
-pub use parley::layout::Alignment as TextAlignment;
 pub use util::{AsAny, Handled};
-pub use vello::peniko::{Color, Gradient};
+pub use peniko::{Color, Gradient};
 pub use widget::{BackgroundBrush, Widget, WidgetId, WidgetPod, WidgetState};
 
 pub use text_helpers::ArcStr;

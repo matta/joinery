@@ -21,7 +21,7 @@ use parley::layout::Alignment;
 use parley::style::{FontFamily, FontStack, StyleProperty};
 use smallvec::SmallVec;
 use tracing::{trace_span, Span};
-use vello::peniko::{Brush, Fill, Format, Image};
+use peniko::{Brush, Fill, Format, Image};
 use vello::Scene;
 use winit::window::Window;
 

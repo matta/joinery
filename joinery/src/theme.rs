@@ -5,7 +5,7 @@
 
 #![allow(missing_docs)]
 
-use vello::peniko::Color;
+use peniko::Color;
 
 use crate::Insets;
 
