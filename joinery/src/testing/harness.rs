@@ -5,6 +5,8 @@
 
 use std::num::NonZeroUsize;
 
+use image::io::Reader as ImageReader;
+use image::{Rgba, RgbaImage};
 use super::screenshots::get_image_diff;
 use super::snapshot_utils::get_cargo_workspace;
 use crate::action::Action;
