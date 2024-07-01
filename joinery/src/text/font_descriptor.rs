@@ -3,7 +3,7 @@
 
 //! Font attributes
 
-use crate::parley::{
+use parley::{
     fontique::{Style, Weight},
     style::FontFamily,
 };

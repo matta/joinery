@@ -3,9 +3,9 @@
 
 //! Helper functions for working with text in Masonry.
 
-use kurbo::{Line, Rect, Stroke};
-use crate::parley::Layout;
+use parley::Layout;
 use crate::vello::{kurbo::Affine, peniko::Fill, Scene};
+use kurbo::{Line, Rect, Stroke};
 
 use crate::{text2::TextBrush, WidgetId};
 
@@ -71,7 +71,7 @@ pub fn render_text(
             let coords = run
                 .normalized_coords()
                 .iter()
-                .map(|coord| vello::skrifa::instance::NormalizedCoord::from_bits(*coord))
+                .map(|coord| crate::vello::skrifa::instance::NormalizedCoord::from_bits(*coord))
                 .collect::<Vec<_>>();
             let text_brush = match &style.brush {
                 TextBrush::Normal(text_brush) => text_brush,

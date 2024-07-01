@@ -4,14 +4,12 @@
 //! Events.
 
 use crate::dpi::{LogicalPosition, PhysicalPosition, PhysicalSize};
-use crate::kurbo::Rect;
 // TODO - See issue https://github.com/linebender/xilem/issues/367
+use crate::kurbo::Rect;
+use crate::terminal::event::{KeyEvent, KeyEventKind, Modifiers};
 use crate::WidgetId;
 
 use std::{collections::HashSet, path::PathBuf};
-
-use winit::event::{Ime, KeyEvent, Modifiers};
-use winit::keyboard::ModifiersState;
 
 // TODO - Occluded(bool) event
 // TODO - winit ActivationTokenDone thing
@@ -70,9 +68,7 @@ pub enum PointerEvent {
 // TODO skip is_synthetic=true events
 #[derive(Debug, Clone)]
 pub enum TextEvent {
-    KeyboardKey(KeyEvent, ModifiersState),
-    Ime(Ime),
-    ModifierChange(ModifiersState),
+    KeyboardKey(KeyEvent),
     // TODO - Document difference with Lifecycle focus change
     FocusChange(bool),
 }
@@ -278,23 +274,14 @@ impl PointerEvent {
 impl TextEvent {
     pub fn short_name(&self) -> &'static str {
         match self {
-            TextEvent::KeyboardKey(_, _) => "KeyboardKey",
-            TextEvent::Ime(Ime::Disabled) => "Ime::Disabled",
-            TextEvent::Ime(Ime::Enabled) => "Ime::Enabled",
-            TextEvent::Ime(Ime::Commit(_)) => "Ime::Commit",
-            TextEvent::Ime(Ime::Preedit(s, _)) if s.is_empty() => "Ime::Preedit(\"\")",
-            TextEvent::Ime(Ime::Preedit(_, _)) => "Ime::Preedit",
-            TextEvent::ModifierChange(_) => "ModifierChange",
+            TextEvent::KeyboardKey(_) => "KeyboardKey",
             TextEvent::FocusChange(_) => "FocusChange",
         }
     }
 
     pub fn is_high_density(&self) -> bool {
         match self {
-            TextEvent::KeyboardKey(event, _) => event.repeat,
-            TextEvent::Ime(_) => false,
-            // Basically every mouse click/scroll event seems to produce a modifier change event.
-            TextEvent::ModifierChange(_) => true,
+            TextEvent::KeyboardKey(event) => event.kind != KeyEventKind::Repeat,
             TextEvent::FocusChange(_) => false,
         }
     }
@@ -335,20 +322,11 @@ impl AccessEvent {
 
 impl PointerState {
     pub fn empty() -> Self {
-        #[cfg(FALSE)]
-        #[allow(unsafe_code)]
-        // SAFETY: Uuuuh, unclear. Winit says the dummy id should only be used in
-        // tests and should never be passed to winit. In principle, we're never
-        // passing this id to winit, but it's still visible to custom widgets which
-        // might do so if they tried really hard.
-        // It would be a lot better if winit could just make this constructor safe.
-        let device_id = unsafe { DeviceId::dummy() };
-
         PointerState {
             physical_position: PhysicalPosition::new(0.0, 0.0),
             position: LogicalPosition::new(0.0, 0.0),
             buttons: Default::default(),
-            mods: Default::default(),
+            mods: Modifiers::NONE,
             count: 0,
             focus: false,
         }

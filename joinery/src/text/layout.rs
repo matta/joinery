@@ -6,9 +6,9 @@
 use std::rc::Rc;
 
 use kurbo::{Line, Point, Rect, Size};
-use crate::parley::layout::{Alignment, Cursor};
-use crate::parley::style::{FontFamily, GenericFamily};
-use crate::parley::{Layout, LayoutContext};
+use parley::layout::{Alignment, Cursor};
+use parley::style::{FontFamily, GenericFamily};
+use parley::{Layout, LayoutContext};
 use peniko::{Brush, Color};
 
 use crate::PaintCtx;

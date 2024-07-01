@@ -15,10 +15,9 @@ use std::cell::RefCell;
 use std::collections::VecDeque;
 use std::rc::Rc;
 
-use accesskit::Role;
-use accesskit_winit::Event;
-use smallvec::SmallVec;
 use crate::vello::Scene;
+use accesskit::Role;
+use smallvec::SmallVec;
 
 use crate::event::{PointerEvent, TextEvent};
 use crate::widget::{SizedBox, WidgetRef};

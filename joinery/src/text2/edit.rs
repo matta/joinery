@@ -1,17 +1,12 @@
 // Copyright 2018 the Xilem Authors and the Druid Authors
 // SPDX-License-Identifier: Apache-2.0
 
-#![cfg(feature = "temporarily_disabled_code")]
-
 use std::ops::{Deref, DerefMut, Range};
 
-use crate::parley::{FontContext, LayoutContext};
+use crate::terminal::event::{KeyCode, KeyEventKind, Modifiers};
 use crate::vello::Scene;
 use kurbo::Point;
-use winit::{
-    event::Ime,
-    keyboard::{Key, NamedKey},
-};
+use parley::{FontContext, LayoutContext};
 
 use crate::{
     event::{PointerButton, PointerState},
@@ -116,11 +111,14 @@ impl<T: EditableText> TextEditor<T> {
             return inner_handled;
         }
         match event {
-            TextEvent::KeyboardKey(event, mods) if event.state.is_pressed() => {
+            TextEvent::KeyboardKey(event) if event.kind == KeyEventKind::Press => {
                 // We don't input actual text when these keys are pressed
-                if !(mods.control_key() || mods.alt_key() || mods.super_key()) {
-                    match &event.logical_key {
-                        Key::Named(NamedKey::Backspace) => {
+                if event
+                    .modifiers
+                    .intersects(Modifiers::CONTROL | Modifiers::META | Modifiers::SUPER)
+                {
+                    match event.code {
+                        KeyCode::Backspace => {
                             if let Some(selection) = self.inner.selection {
                                 if !selection.is_caret() {
                                     self.text_mut().edit(selection.range(), "");
@@ -143,7 +141,7 @@ impl<T: EditableText> TextEditor<T> {
                                 Handled::No
                             }
                         }
-                        Key::Named(NamedKey::Delete) => {
+                        KeyCode::Delete => {
                             if let Some(selection) = self.inner.selection {
                                 if !selection.is_caret() {
                                     self.text_mut().edit(selection.range(), "");
@@ -165,7 +163,7 @@ impl<T: EditableText> TextEditor<T> {
                                 Handled::No
                             }
                         }
-                        Key::Named(NamedKey::Space) => {
+                        KeyCode::Char(' ') => {
                             let selection = self.inner.selection.unwrap_or(Selection {
                                 anchor: 0,
                                 active: 0,
@@ -183,22 +181,23 @@ impl<T: EditableText> TextEditor<T> {
                             ctx.submit_action(Action::TextChanged(contents));
                             Handled::Yes
                         }
-                        Key::Named(NamedKey::Enter) => {
+                        KeyCode::Enter => {
                             let contents = self.text().as_str().to_string();
                             ctx.submit_action(Action::TextEntered(contents));
                             Handled::Yes
                         }
-                        Key::Named(_) => Handled::No,
-                        Key::Character(c) => {
+                        KeyCode::Char(c) => {
                             let selection = self.inner.selection.unwrap_or(Selection {
                                 anchor: 0,
                                 active: 0,
                                 active_affinity: Affinity::Downstream,
                                 h_pos: None,
                             });
-                            self.text_mut().edit(selection.range(), &**c);
+                            let c = format!("{}", c);
+                            let len = c.len();
+                            self.text_mut().edit(selection.range(), c);
                             self.inner.selection = Some(Selection::caret(
-                                selection.min() + c.len(),
+                                selection.min() + len,
                                 // We have just added this character, so we are "affined" with it
                                 Affinity::Downstream,
                             ));
@@ -206,17 +205,38 @@ impl<T: EditableText> TextEditor<T> {
                             ctx.submit_action(Action::TextChanged(contents));
                             Handled::Yes
                         }
-                        Key::Unidentified(_) => Handled::No,
-                        Key::Dead(d) => {
-                            eprintln!("Got dead key {d:?}. Will handle");
-                            Handled::No
-                        }
+                        crossterm::event::KeyCode::Left => Handled::No,
+                        crossterm::event::KeyCode::Right => Handled::No,
+                        crossterm::event::KeyCode::Up => Handled::No,
+                        crossterm::event::KeyCode::Down => Handled::No,
+                        crossterm::event::KeyCode::Home => Handled::No,
+                        crossterm::event::KeyCode::End => Handled::No,
+                        crossterm::event::KeyCode::PageUp => Handled::No,
+                        crossterm::event::KeyCode::PageDown => Handled::No,
+                        crossterm::event::KeyCode::Tab => Handled::No,
+                        crossterm::event::KeyCode::BackTab => Handled::No,
+                        crossterm::event::KeyCode::Insert => Handled::No,
+                        crossterm::event::KeyCode::F(_) => Handled::No,
+                        crossterm::event::KeyCode::Null => Handled::No,
+                        crossterm::event::KeyCode::Esc => Handled::No,
+                        crossterm::event::KeyCode::CapsLock => Handled::No,
+                        crossterm::event::KeyCode::ScrollLock => Handled::No,
+                        crossterm::event::KeyCode::NumLock => Handled::No,
+                        crossterm::event::KeyCode::PrintScreen => Handled::No,
+                        crossterm::event::KeyCode::Pause => Handled::No,
+                        crossterm::event::KeyCode::Menu => Handled::No,
+                        crossterm::event::KeyCode::KeypadBegin => Handled::No,
+                        crossterm::event::KeyCode::Media(_) => Handled::No,
+                        crossterm::event::KeyCode::Modifier(_) => Handled::No,
                     }
-                } else if mods.control_key() || mods.super_key()
-                // TODO: do things differently on mac, rather than capturing both super and control.
+                } else if event
+                    .modifiers
+                    .intersects(Modifiers::CONTROL | Modifiers::SUPER)
                 {
-                    match &event.logical_key {
-                        Key::Named(NamedKey::Backspace) => {
+                    // TODO: do things differently on mac, rather than capturing
+                    // both super and control.
+                    match &event.code {
+                        KeyCode::Backspace => {
                             if let Some(selection) = self.inner.selection {
                                 if !selection.is_caret() {
                                     self.text_mut().edit(selection.range(), "");
@@ -236,7 +256,7 @@ impl<T: EditableText> TextEditor<T> {
                                 Handled::No
                             }
                         }
-                        Key::Named(NamedKey::Delete) => {
+                        KeyCode::Delete => {
                             if let Some(selection) = self.inner.selection {
                                 if !selection.is_caret() {
                                     self.text_mut().edit(selection.range(), "");
@@ -264,95 +284,7 @@ impl<T: EditableText> TextEditor<T> {
                     Handled::No
                 }
             }
-            TextEvent::KeyboardKey(_, _) => Handled::No,
-            TextEvent::Ime(ime) => match ime {
-                Ime::Commit(text) => {
-                    if let Some(selection_range) = self.selection.map(|x| x.range()) {
-                        self.text_mut().edit(selection_range.clone(), text);
-                        self.selection = Some(Selection::caret(
-                            selection_range.start + text.len(),
-                            Affinity::Upstream,
-                        ));
-                    }
-                    let contents = self.text().as_str().to_string();
-                    ctx.submit_action(Action::TextChanged(contents));
-                    Handled::Yes
-                }
-                Ime::Preedit(preedit_string, preedit_sel) => {
-                    if let Some(preedit) = self.preedit_range.clone() {
-                        // TODO: Handle the case where this is the same value, to avoid some potential infinite loops
-                        self.text_mut().edit(preedit.clone(), preedit_string);
-                        let np = preedit.start..(preedit.start + preedit_string.len());
-                        self.preedit_range = if preedit_string.is_empty() {
-                            None
-                        } else {
-                            Some(np.clone())
-                        };
-                        self.selection = if let Some(pec) = preedit_sel {
-                            Some(Selection::new(
-                                np.start + pec.0,
-                                np.start + pec.1,
-                                Affinity::Upstream,
-                            ))
-                        } else {
-                            Some(Selection::caret(np.end, Affinity::Upstream))
-                        };
-                    } else {
-                        // If we've been sent an event to clear the preedit,
-                        // but there was no existing pre-edit, there's nothing to do
-                        // so we report that the event has been handled
-                        // An empty preedit is sent by some environments when the
-                        // context of a text input has changed, even if the contents
-                        // haven't; this also avoids some potential infinite loops
-                        if preedit_string.is_empty() {
-                            return Handled::Yes;
-                        }
-                        let sr = self.selection.map(|x| x.range()).unwrap_or(0..0);
-                        self.text_mut().edit(sr.clone(), preedit_string);
-                        let np = sr.start..(sr.start + preedit_string.len());
-                        self.preedit_range = if preedit_string.is_empty() {
-                            None
-                        } else {
-                            Some(np.clone())
-                        };
-                        self.selection = if let Some(pec) = preedit_sel {
-                            Some(Selection::new(
-                                np.start + pec.0,
-                                np.start + pec.1,
-                                Affinity::Upstream,
-                            ))
-                        } else {
-                            Some(Selection::caret(np.start, Affinity::Upstream))
-                        };
-                    }
-                    Handled::Yes
-                }
-                Ime::Enabled => {
-                    // Generally this shouldn't happen, but I can't prove it won't.
-                    if let Some(preedit) = self.preedit_range.clone() {
-                        self.text_mut().edit(preedit.clone(), "");
-                        self.selection = Some(
-                            self.selection
-                                .unwrap_or(Selection::caret(0, Affinity::Upstream)),
-                        );
-                        self.preedit_range = None;
-                    }
-                    Handled::Yes
-                }
-                Ime::Disabled => {
-                    if let Some(preedit) = self.preedit_range.clone() {
-                        self.text_mut().edit(preedit.clone(), "");
-                        self.preedit_range = None;
-                        let sm = self.selection.map(|x| x.min()).unwrap_or(0);
-                        if preedit.contains(&sm) {
-                            self.selection =
-                                Some(Selection::caret(preedit.start, Affinity::Upstream));
-                        }
-                    }
-                    Handled::Yes
-                }
-            },
-            TextEvent::ModifierChange(_) => Handled::No,
+            TextEvent::KeyboardKey(_) => Handled::No,
             TextEvent::FocusChange(_) => Handled::No,
         }
     }

@@ -3,17 +3,15 @@
 
 //! A type for laying out, drawing, and interacting with text.
 
-#![cfg(feature = "temporarily_disabled_code")]
-
 use std::rc::Rc;
 
-use crate::parley::context::RangedBuilder;
-use crate::parley::fontique::{Style, Weight};
-use crate::parley::layout::{Alignment, Cursor};
-use crate::parley::style::{
+use parley::context::RangedBuilder;
+use parley::fontique::{Style, Weight};
+use parley::layout::{Alignment, Cursor};
+use parley::style::{
     Brush as BrushTrait, FontFamily, FontStack, GenericFamily, StyleProperty,
 };
-use crate::parley::{FontContext, Layout, LayoutContext};
+use parley::{FontContext, Layout, LayoutContext};
 use crate::vello::Scene;
 use kurbo::{Affine, Line, Point, Rect, Size};
 use peniko::{self, Color, Gradient};

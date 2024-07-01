@@ -3,7 +3,7 @@
 
 use accesskit::Role;
 use kurbo::{Affine, Point, Size};
-use crate::parley::{
+use parley::{
     layout::Alignment,
     style::{FontFamily, FontStack},
 };

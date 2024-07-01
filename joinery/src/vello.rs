@@ -1,7 +1,13 @@
 pub use kurbo;
 pub use peniko;
 
+#[derive(Clone)]
 pub(crate) struct Scene {}
+impl Scene {
+    pub(crate) fn new() -> Scene {
+        todo!()
+    }
+}
 pub(crate) struct AaSupport {}
 pub(crate) struct RenderParams {}
 pub(crate) struct Renderer {}

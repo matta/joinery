@@ -5,7 +5,7 @@
 
 use std::{ops::Deref, sync::Arc};
 
-use crate::parley::context::RangedBuilder;
+use parley::context::RangedBuilder;
 use peniko::Brush;
 
 use super::attribute::Link;

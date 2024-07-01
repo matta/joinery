@@ -1,8 +1,6 @@
 [workspace]
 resolver = "2"
-members = [
-    "joinery",
-]
+members = ["joinery"]
 
 [workspace.package]
 edition = "2021"
@@ -23,6 +21,7 @@ clippy.assigning_clones = "allow"
 masonry = { version = "0.2.0", path = "masonry" }
 kurbo = "0.11.0"
 peniko = "0.1.1"
+parley = "0.1.0"
 tracing = { version = "0.1.40", default-features = false }
 smallvec = "1.13.2"
 dpi = "0.1.1"

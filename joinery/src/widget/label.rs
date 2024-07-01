@@ -5,8 +5,8 @@
 
 use accesskit::Role;
 use kurbo::{Affine, Point, Size};
-use crate::parley::layout::Alignment;
-use crate::parley::style::{FontFamily, FontStack};
+use parley::layout::Alignment;
+use parley::style::{FontFamily, FontStack};
 use smallvec::SmallVec;
 use tracing::{trace, trace_span, Span};
 use peniko::BlendMode;
@@ -276,7 +276,7 @@ impl Widget for Label {
 #[cfg(test)]
 mod tests {
     use insta::assert_debug_snapshot;
-    use crate::parley::style::GenericFamily;
+    use parley::style::GenericFamily;
 
     use super::*;
     use crate::assert_render_snapshot;

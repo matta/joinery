@@ -92,7 +92,6 @@ pub use dpi;
 pub use kurbo;
 
 // TODO: hack impersonate various things
-mod parley;
 mod vello;
 
 #[macro_use]
@@ -106,8 +105,8 @@ mod event;
 pub mod paint_scene_helpers;
 pub mod promise;
 pub mod render_root;
+pub mod terminal;
 pub mod testing;
-// mod text;
 pub mod text_helpers;
 pub mod theme;
 pub mod widget;

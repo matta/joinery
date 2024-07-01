@@ -3,18 +3,16 @@
 
 use std::collections::VecDeque;
 
+use parley::{FontContext, LayoutContext};
+use crate::terminal::event::KeyEvent;
+use crate::vello::Scene;
 use accesskit::{ActionRequest, NodeBuilder, Tree, TreeUpdate};
 use kurbo::Affine;
-use crate::parley::{FontContext, LayoutContext};
-use tracing::{debug, info_span, warn};
 use peniko::{Color, Fill};
-use crate::vello::Scene;
-use winit::keyboard::{KeyCode, PhysicalKey};
+use tracing::{debug, info_span, warn};
 
 #[cfg(not(target_arch = "wasm32"))]
 use std::time::Instant;
-#[cfg(target_arch = "wasm32")]
-use web_time::Instant;
 
 use crate::contexts::{EventCtx, LayoutCtx, LifeCycleCtx, PaintCtx, WidgetCtx, WorkerFn};
 use crate::debug_logger::DebugLogger;
@@ -308,7 +306,7 @@ impl RenderRoot {
         let handled = {
             ctx.global_state
                 .debug_logger
-                .push_important_span(&format!("TEXT_EVENT {}", event.short_name()));
+                .push_importan_span(&format!("TEXT_EVENT {}", event.short_name()));
             let _span = info_span!("text_event").entered();
             if !event.is_high_density() {
                 debug!("Running ON_TEXT_EVENT pass with {}", event.short_name());
@@ -328,12 +326,16 @@ impl RenderRoot {
         };
 
         // If event is tab we handle focus
-        if let TextEvent::KeyboardKey(key, mods) = event {
-            if handled == Handled::No && key.physical_key == PhysicalKey::Code(KeyCode::Tab) {
-                if !mods.shift_key() {
-                    self.state.next_focused_widget = self.widget_from_focus_chain(true);
-                } else {
-                    self.state.next_focused_widget = self.widget_from_focus_chain(false);
+        if let TextEvent::KeyboardKey(key) = event {
+            if handled == Handled::No {
+                let forward = None;
+                if key.code == KeyEvent::Tab {
+                    Some(true)
+                } else if key.code == KeyEvent::BackTab {
+                    Some(false)
+                }
+                if let Some(forward) = forward {
+                    self.state.next_focused_widget = self.widget_from_focus_chain(forward);
                 }
             }
         }
@@ -583,13 +585,6 @@ impl RenderRoot {
             self.state
                 .signal_queue
                 .push_back(RenderRootSignal::RequestRedraw);
-        }
-
-        #[cfg(FALSE)]
-        for ime_field in widget_state.text_registrations.drain(..) {
-            let token = self.handle.add_text_field();
-            tracing::debug!("{:?} added", token);
-            self.ime_handlers.push((token, ime_field));
         }
     }
 
