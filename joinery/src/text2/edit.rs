@@ -1,11 +1,13 @@
 // Copyright 2018 the Xilem Authors and the Druid Authors
 // SPDX-License-Identifier: Apache-2.0
 
+#![cfg(feature = "temporarily_disabled_code")]
+
 use std::ops::{Deref, DerefMut, Range};
 
+use crate::parley::{FontContext, LayoutContext};
+use crate::vello::Scene;
 use kurbo::Point;
-use parley::{FontContext, LayoutContext};
-use vello::Scene;
 use winit::{
     event::Ime,
     keyboard::{Key, NamedKey},

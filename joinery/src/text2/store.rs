@@ -3,9 +3,11 @@
 
 //! Storing text.
 
+#![cfg(feature = "temporarily_disabled_code")]
+
 use std::{ops::Deref, sync::Arc};
 
-use parley::context::RangedBuilder;
+use crate::parley::context::RangedBuilder;
 
 use crate::ArcStr;
 

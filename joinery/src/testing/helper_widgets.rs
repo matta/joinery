@@ -18,7 +18,7 @@ use std::rc::Rc;
 use accesskit::Role;
 use accesskit_winit::Event;
 use smallvec::SmallVec;
-use vello::Scene;
+use crate::vello::Scene;
 
 use crate::event::{PointerEvent, TextEvent};
 use crate::widget::{SizedBox, WidgetRef};

@@ -3,7 +3,7 @@
 
 #![allow(missing_docs)]
 
-use vello::{
+use crate::vello::{
     kurbo::{self, Affine, Rect, Shape, Stroke},
     peniko::{BrushRef, Color, ColorStopsSource, Fill, Gradient},
     Scene,

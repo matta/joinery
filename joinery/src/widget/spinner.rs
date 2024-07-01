@@ -9,7 +9,7 @@ use accesskit::Role;
 use kurbo::{Affine, Cap, Stroke};
 use smallvec::SmallVec;
 use tracing::{trace, trace_span, Span};
-use vello::Scene;
+use crate::vello::Scene;
 
 use crate::kurbo::Line;
 use crate::widget::{WidgetMut, WidgetRef};

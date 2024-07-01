@@ -6,8 +6,8 @@
 use std::any::Any;
 use std::time::Duration;
 
+use crate::parley::{FontContext, LayoutContext};
 use accesskit::{NodeBuilder, TreeUpdate};
-use parley::{FontContext, LayoutContext};
 use tracing::{trace, warn};
 
 use crate::action::Action;

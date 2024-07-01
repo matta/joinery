@@ -9,7 +9,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use accesskit::Role;
 use smallvec::SmallVec;
 use tracing::{trace_span, Span};
-use vello::Scene;
+use crate::vello::Scene;
 
 use crate::event::{AccessEvent, PointerEvent, StatusChange, TextEvent};
 use crate::widget::WidgetRef;

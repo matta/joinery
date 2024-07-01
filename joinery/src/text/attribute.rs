@@ -5,7 +5,7 @@
 
 use std::ops::Range;
 
-use parley::{
+use crate::parley::{
     fontique::{Style, Weight},
     style::{FontFamily, StyleProperty},
 };

@@ -6,7 +6,7 @@
 use accesskit::Role;
 use smallvec::SmallVec;
 use tracing::{trace_span, Span};
-use vello::Scene;
+use crate::vello::Scene;
 
 use super::Axis;
 use crate::kurbo::Rect;

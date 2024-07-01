@@ -7,11 +7,11 @@ use std::borrow::Cow;
 use std::ops::{Deref, DerefMut, Range};
 
 use kurbo::{Affine, Line, Point, Stroke};
-use parley::context::RangedBuilder;
-use parley::{FontContext, LayoutContext};
+use crate::parley::context::RangedBuilder;
+use crate::parley::{FontContext, LayoutContext};
 use unicode_segmentation::{GraphemeCursor, UnicodeSegmentation};
 use peniko::{Brush, Color};
-use vello::Scene;
+use crate::vello::Scene;
 use winit::keyboard::NamedKey;
 
 use crate::event::{PointerButton, PointerState};

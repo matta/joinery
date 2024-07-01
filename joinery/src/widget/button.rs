@@ -6,7 +6,7 @@
 use accesskit::{DefaultActionVerb, Role};
 use smallvec::{smallvec, SmallVec};
 use tracing::{trace, trace_span, Span};
-use vello::Scene;
+use crate::vello::Scene;
 
 use crate::action::Action;
 use crate::event::PointerButton;

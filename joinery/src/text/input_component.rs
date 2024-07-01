@@ -8,7 +8,7 @@ use std::ops::Range;
 use std::sync::{Arc, Weak};
 
 use kurbo::{Line, Point, Vec2};
-use parley::layout::Alignment;
+use crate::parley::layout::Alignment;
 use winit::event::Modifiers;
 
 use super::backspace::offset_for_delete_backwards;

@@ -1,14 +1,15 @@
 // Copyright 2024 the Xilem Authors
 // SPDX-License-Identifier: Apache-2.0
+#![cfg(feature = "temporarily_disabled_code")]
 
 use std::num::NonZeroUsize;
 use std::sync::Arc;
 
+use crate::vello::kurbo::Affine;
+use crate::vello::util::{RenderContext, RenderSurface};
+use crate::vello::{peniko::Color, AaSupport, RenderParams, Renderer, RendererOptions, Scene};
 use accesskit_winit::Adapter;
 use tracing::{debug, warn};
-use vello::kurbo::Affine;
-use vello::util::{RenderContext, RenderSurface};
-use vello::{peniko::Color, AaSupport, RenderParams, Renderer, RendererOptions, Scene};
 use wgpu::PresentMode;
 use winit::application::ApplicationHandler;
 use winit::error::EventLoopError;
@@ -417,7 +418,7 @@ impl MainState<'_> {
             base_color: Color::BLACK,
             width,
             height,
-            antialiasing_method: vello::AaConfig::Area,
+            antialiasing_method: crate::vello::AaConfig::Area,
         };
         self.renderer
             .get_or_insert_with(|| Renderer::new(device, renderer_options).unwrap())

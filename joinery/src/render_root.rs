@@ -5,10 +5,10 @@ use std::collections::VecDeque;
 
 use accesskit::{ActionRequest, NodeBuilder, Tree, TreeUpdate};
 use kurbo::Affine;
-use parley::{FontContext, LayoutContext};
+use crate::parley::{FontContext, LayoutContext};
 use tracing::{debug, info_span, warn};
 use peniko::{Color, Fill};
-use vello::Scene;
+use crate::vello::Scene;
 use winit::keyboard::{KeyCode, PhysicalKey};
 
 #[cfg(not(target_arch = "wasm32"))]

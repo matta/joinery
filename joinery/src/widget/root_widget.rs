@@ -5,7 +5,7 @@ use accesskit::Role;
 use kurbo::Point;
 use smallvec::SmallVec;
 use tracing::{trace_span, Span};
-use vello::Scene;
+use crate::vello::Scene;
 
 use crate::widget::{WidgetMut, WidgetPod, WidgetRef};
 use crate::{

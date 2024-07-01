@@ -5,12 +5,12 @@
 
 use accesskit::Role;
 use kurbo::{Affine, Point, Size};
-use parley::layout::Alignment;
-use parley::style::{FontFamily, FontStack};
+use crate::parley::layout::Alignment;
+use crate::parley::style::{FontFamily, FontStack};
 use smallvec::SmallVec;
 use tracing::{trace, trace_span, Span};
 use peniko::BlendMode;
-use vello::Scene;
+use crate::vello::Scene;
 
 use crate::text2::{TextBrush, TextLayout, TextStorage};
 use crate::widget::{WidgetMut, WidgetRef};
@@ -276,7 +276,7 @@ impl Widget for Label {
 #[cfg(test)]
 mod tests {
     use insta::assert_debug_snapshot;
-    use parley::style::GenericFamily;
+    use crate::parley::style::GenericFamily;
 
     use super::*;
     use crate::assert_render_snapshot;

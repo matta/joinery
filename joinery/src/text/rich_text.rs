@@ -6,9 +6,9 @@
 use std::ops::{Range, RangeBounds};
 use std::sync::Arc;
 
-use parley::context::RangedBuilder;
-use parley::fontique::{Style, Weight};
-use parley::style::FontFamily;
+use crate::parley::context::RangedBuilder;
+use crate::parley::fontique::{Style, Weight};
+use crate::parley::style::FontFamily;
 use peniko::{Brush, Color};
 
 use super::attribute::{Attribute, AttributeSpans, Link};

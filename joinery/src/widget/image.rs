@@ -9,7 +9,7 @@ use kurbo::Affine;
 use smallvec::SmallVec;
 use tracing::{trace, trace_span, Span};
 use peniko::{BlendMode, Image as ImageBuf};
-use vello::Scene;
+use crate::vello::Scene;
 
 use crate::widget::{FillStrat, WidgetMut, WidgetRef};
 use crate::{

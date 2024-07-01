@@ -7,7 +7,7 @@ use accesskit::Role;
 use kurbo::{Affine, Stroke};
 use smallvec::SmallVec;
 use tracing::{trace, trace_span, Span};
-use vello::Scene;
+use crate::vello::Scene;
 
 use crate::kurbo::common::FloatExt;
 use crate::kurbo::{Line, Vec2};

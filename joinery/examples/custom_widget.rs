@@ -17,12 +17,12 @@ use masonry::{
     LifeCycleCtx, PaintCtx, Point, PointerEvent, Rect, Size, StatusChange, TextEvent, Widget,
     WidgetId,
 };
-use parley::layout::Alignment;
-use parley::style::{FontFamily, FontStack, StyleProperty};
+use crate::parley::layout::Alignment;
+use crate::parley::style::{FontFamily, FontStack, StyleProperty};
 use smallvec::SmallVec;
 use tracing::{trace_span, Span};
 use peniko::{Brush, Fill, Format, Image};
-use vello::Scene;
+use crate::vello::Scene;
 use winit::window::Window;
 
 struct Driver;

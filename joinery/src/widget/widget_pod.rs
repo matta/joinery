@@ -3,7 +3,6 @@
 
 use accesskit::{NodeBuilder, NodeId};
 use tracing::{info_span, trace, warn};
-use vello::Scene;
 
 use crate::dpi::LogicalPosition;
 use crate::event::{AccessEvent, PointerEvent, TextEvent};

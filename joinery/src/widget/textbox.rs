@@ -3,13 +3,13 @@
 
 use accesskit::Role;
 use kurbo::{Affine, Point, Size, Stroke};
-use parley::{
+use crate::parley::{
     layout::Alignment,
     style::{FontFamily, FontStack},
 };
 use smallvec::SmallVec;
 use tracing::{trace, trace_span, Span};
-use vello::{
+use crate::vello::{
     peniko::{BlendMode, Color},
     Scene,
 };
