@@ -2,10 +2,6 @@ use smol_str::SmolStr;
 
 use super::keyboard::{self, ModifiersKeyState, ModifiersKeys};
 
-// pub(crate) type KeyEvent = ratatui::crossterm::event::KeyEvent;
-pub(crate) type CrosstermKeyCode = ratatui::crossterm::event::KeyCode;
-pub(crate) type CrosstermKeyEventKind = ratatui::crossterm::event::KeyEventKind;
-
 /// Describes a keyboard input targeting a window.
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 pub struct KeyEvent {

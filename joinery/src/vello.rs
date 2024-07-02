@@ -1,10 +1,15 @@
+#![allow(dead_code, unused_variables)]
+
+pub use kurbo;
+pub use peniko;
+
 use kurbo::{Affine, Rect, Shape, Stroke};
 use peniko::{BlendMode, BrushRef, Fill, Font, Image, StyleRef};
 
 use self::glyph::Glyph;
 
 #[derive(Clone, Default)]
-pub(crate) struct Encoding {}
+pub struct Encoding {}
 impl Encoding {
     fn reset(&mut self) {
         todo!()
@@ -16,22 +21,22 @@ impl Encoding {
 /// A Scene stores a sequence of drawing commands, their context, and the
 /// associated resources, which can later be rendered.
 #[derive(Clone, Default)]
-pub(crate) struct Scene {
+pub struct Scene {
     encoding: Encoding,
 }
 
 impl Scene {
-    pub(crate) fn new() -> Scene {
+    pub fn new() -> Scene {
         Self::default()
     }
 
     /// Removes all content from the scene.
-    pub(crate) fn reset(&mut self) {
+    pub fn reset(&mut self) {
         self.encoding.reset();
     }
 
     /// Returns the underlying raw encoding.
-    pub(crate) fn encoding(&self) -> &Encoding {
+    pub fn encoding(&self) -> &Encoding {
         &self.encoding
     }
 
@@ -42,7 +47,7 @@ impl Scene {
     /// until the layer is popped.
     ///
     /// **However, the transforms are *not* saved or modified by the layer stack.**
-    pub(crate) fn push_layer(
+    pub fn push_layer(
         &mut self,
         _blend: impl Into<BlendMode>,
         _alpha: f32,
@@ -53,12 +58,12 @@ impl Scene {
     }
 
     /// Pops the current layer.
-    pub(crate) fn pop_layer(&mut self) {
+    pub fn pop_layer(&mut self) {
         todo!()
     }
 
     /// Fills a shape using the specified style and brush.
-    pub(crate) fn fill<'b>(
+    pub fn fill<'b>(
         &mut self,
         _style: Fill,
         _transform: Affine,
@@ -70,7 +75,7 @@ impl Scene {
     }
 
     /// Strokes a shape using the specified style and brush.
-    pub(crate) fn stroke<'b>(
+    pub fn stroke<'b>(
         &mut self,
         _style: &Stroke,
         _transform: Affine,
@@ -82,7 +87,7 @@ impl Scene {
     }
 
     /// Draws an image at its natural size with the given transform.
-    pub(crate) fn draw_image(&mut self, image: &Image, transform: Affine) {
+    pub fn draw_image(&mut self, image: &Image, transform: Affine) {
         self.fill(
             Fill::NonZero,
             transform,
@@ -94,7 +99,7 @@ impl Scene {
 
     /// Returns a builder for encoding a glyph run.
     #[allow(unused_variables)]
-    pub(crate) fn draw_glyphs(&mut self, font: &Font) -> DrawGlyphs {
+    pub fn draw_glyphs(&mut self, font: &Font) -> DrawGlyphs {
         todo!()
     }
 
@@ -103,13 +108,13 @@ impl Scene {
     /// The given transform is applied to every transform in the child.
     /// This is an O(N) operation.
     #[allow(unused_variables)]
-    pub(crate) fn append(&mut self, other: &Scene, transform: Option<Affine>) {
+    pub fn append(&mut self, other: &Scene, transform: Option<Affine>) {
         todo!()
     }
 }
 
 /// Builder for encoding a glyph run.
-pub(crate) struct DrawGlyphs<'a> {
+pub struct DrawGlyphs<'a> {
     encoding: &'a mut Encoding,
     // TODO: this was here -> run: GlyphRun,
     brush: BrushRef<'a>,
@@ -122,7 +127,7 @@ impl<'a> DrawGlyphs<'a> {
     ///
     /// The default value is the identity matrix.
     #[allow(unused_mut, unused_variables)] // TODO: remove this
-    pub(crate) fn transform(mut self, transform: Affine) -> Self {
+    pub fn transform(mut self, transform: Affine) -> Self {
         // TODO: this was here -> self.run.transform = Transform::from_kurbo(&transform);
         // TODO: this was here -> self
         todo!()
@@ -134,7 +139,7 @@ impl<'a> DrawGlyphs<'a> {
     ///
     /// The default value is `None`.
     #[allow(unused_mut, unused_variables)] // TODO: remove this
-    pub(crate) fn glyph_transform(mut self, transform: Option<Affine>) -> Self {
+    pub fn glyph_transform(mut self, transform: Option<Affine>) -> Self {
         todo!()
         // ignore this and return self?
     }
@@ -142,7 +147,7 @@ impl<'a> DrawGlyphs<'a> {
     /// Sets the font size in pixels per em units.
     ///
     /// The default value is 16.0.
-    pub(crate) fn font_size(self, size: f32) -> Self {
+    pub fn font_size(self, size: f32) -> Self {
         let _ = size;
         // TODO: this was here self.run.font_size = size;
         self
@@ -151,7 +156,7 @@ impl<'a> DrawGlyphs<'a> {
     /// Sets the brush.
     ///
     /// The default value is solid black.
-    pub(crate) fn brush(mut self, brush: impl Into<BrushRef<'a>>) -> Self {
+    pub fn brush(mut self, brush: impl Into<BrushRef<'a>>) -> Self {
         self.brush = brush.into();
         self
     }
@@ -159,7 +164,7 @@ impl<'a> DrawGlyphs<'a> {
     /// Encodes a fill or stroke for the given sequence of glyphs and consumes the builder.
     ///
     /// The `style` parameter accepts either `Fill` or `&Stroke` types.
-    pub(crate) fn draw(self, style: impl Into<StyleRef<'a>>, glyphs: impl Iterator<Item = Glyph>) {
+    pub fn draw(self, style: impl Into<StyleRef<'a>>, glyphs: impl Iterator<Item = Glyph>) {
         todo!();
 
         #[cfg(any())]
@@ -186,62 +191,62 @@ impl<'a> DrawGlyphs<'a> {
     }
 }
 
-pub(crate) mod glyph {
+pub mod glyph {
     use std::ops::Range;
 
     use peniko::{Font, Style};
 
     #[derive(Clone)]
-    struct Transform {}
+    pub struct Transform {}
     #[derive(Clone)]
-    struct StreamOffsets {}
+    pub struct StreamOffsets {}
 
     /// Positioned glyph.
     #[derive(Copy, Clone, Default, Debug)]
-    pub(crate) struct Glyph {
+    pub struct Glyph {
         /// Glyph identifier.
-        pub(crate) id: u32,
+        pub id: u32,
         /// X-offset in run, relative to transform.
-        pub(crate) x: f32,
+        pub x: f32,
         /// Y-offset in run, relative to transform.
-        pub(crate) y: f32,
+        pub y: f32,
     }
 
     /// Properties for a sequence of glyphs in an encoding.
     #[derive(Clone)]
-    pub(crate) struct GlyphRun {
+    pub struct GlyphRun {
         /// Font for all glyphs in the run.
-        pub(crate) font: Font,
+        pub font: Font,
         /// Global run transform.
-        pub(crate) transform: Transform,
+        pub transform: Transform,
         /// Per-glyph transform.
-        pub(crate) glyph_transform: Option<Transform>,
+        pub glyph_transform: Option<Transform>,
         /// Size of the font in pixels per em.
-        pub(crate) font_size: f32,
+        pub font_size: f32,
         /// True if hinting is enabled.
-        pub(crate) hint: bool,
+        pub hint: bool,
         /// Range of normalized coordinates in the parent encoding.
-        pub(crate) normalized_coords: Range<usize>,
+        pub normalized_coords: Range<usize>,
         /// Fill or stroke style.
-        pub(crate) style: Style,
+        pub style: Style,
         /// Range of glyphs in the parent encoding.
-        pub(crate) glyphs: Range<usize>,
+        pub glyphs: Range<usize>,
         /// Stream offsets where this glyph run should be inserted.
-        pub(crate) stream_offsets: StreamOffsets,
+        pub stream_offsets: StreamOffsets,
     }
 }
 
-pub(crate) struct AaSupport {}
-pub(crate) struct RenderParams {}
-pub(crate) struct Renderer {}
-pub(crate) struct RendererOptions {}
-pub(crate) enum AaConfig {
+pub struct AaSupport {}
+pub struct RenderParams {}
+pub struct Renderer {}
+pub struct RendererOptions {}
+pub enum AaConfig {
     Area,
     Msaa8,
     Msaa16,
 }
 
-pub(crate) mod util {
-    pub(crate) struct RenderContext {}
-    pub(crate) struct RenderSurface {}
+pub mod util {
+    pub struct RenderContext {}
+    pub struct RenderSurface {}
 }

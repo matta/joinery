@@ -112,6 +112,7 @@ pub struct TestHarness {
     render_root: RenderRoot,
     mouse_state: PointerState,
     window_size: PhysicalSize<u32>,
+    #[allow(dead_code)] // FIXME
     background_color: Color,
 }
 

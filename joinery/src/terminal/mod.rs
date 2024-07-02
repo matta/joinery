@@ -1,2 +1,2 @@
-pub(crate) mod event;
-pub(crate) mod keyboard;
+pub mod event;
+pub mod keyboard;
