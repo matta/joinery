@@ -6,7 +6,7 @@
 use crate::dpi::{LogicalPosition, PhysicalPosition, PhysicalSize};
 // TODO - See issue https://github.com/linebender/xilem/issues/367
 use crate::kurbo::Rect;
-use crate::terminal::event::{KeyEvent, KeyEventKind, Modifiers};
+use crate::terminal::event::{KeyEvent, Modifiers, ModifiersState};
 use crate::WidgetId;
 
 use std::{collections::HashSet, path::PathBuf};
@@ -68,7 +68,8 @@ pub enum PointerEvent {
 // TODO skip is_synthetic=true events
 #[derive(Debug, Clone)]
 pub enum TextEvent {
-    KeyboardKey(KeyEvent),
+    KeyboardKey(KeyEvent, ModifiersState),
+    ModifierChange(ModifiersState),
     // TODO - Document difference with Lifecycle focus change
     FocusChange(bool),
 }
@@ -274,14 +275,17 @@ impl PointerEvent {
 impl TextEvent {
     pub fn short_name(&self) -> &'static str {
         match self {
-            TextEvent::KeyboardKey(_) => "KeyboardKey",
+            TextEvent::KeyboardKey(_, _) => "KeyboardKey",
+            TextEvent::ModifierChange(_) => "ModifierChange",
             TextEvent::FocusChange(_) => "FocusChange",
         }
     }
 
     pub fn is_high_density(&self) -> bool {
         match self {
-            TextEvent::KeyboardKey(event) => event.kind != KeyEventKind::Repeat,
+            TextEvent::KeyboardKey(event, _) => event.repeat,
+            // Basically every mouse click/scroll event seems to produce a modifier change event.
+            TextEvent::ModifierChange(_) => true,
             TextEvent::FocusChange(_) => false,
         }
     }
@@ -326,7 +330,7 @@ impl PointerState {
             physical_position: PhysicalPosition::new(0.0, 0.0),
             position: LogicalPosition::new(0.0, 0.0),
             buttons: Default::default(),
-            mods: Modifiers::NONE,
+            mods: Default::default(),
             count: 0,
             focus: false,
         }

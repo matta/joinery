@@ -3,8 +3,10 @@
 
 use std::ops::{Deref, DerefMut, Range};
 
-use crate::terminal::event::{KeyCode, KeyEventKind, Modifiers};
-use crate::vello::Scene;
+use crate::{
+    terminal::keyboard::{Key, NamedKey},
+    vello::Scene,
+};
 use kurbo::Point;
 use parley::{FontContext, LayoutContext};
 
@@ -111,14 +113,11 @@ impl<T: EditableText> TextEditor<T> {
             return inner_handled;
         }
         match event {
-            TextEvent::KeyboardKey(event) if event.kind == KeyEventKind::Press => {
+            TextEvent::KeyboardKey(event, mods) if event.state.is_pressed() => {
                 // We don't input actual text when these keys are pressed
-                if event
-                    .modifiers
-                    .intersects(Modifiers::CONTROL | Modifiers::META | Modifiers::SUPER)
-                {
-                    match event.code {
-                        KeyCode::Backspace => {
+                if !(mods.control_key() || mods.alt_key() || mods.super_key()) {
+                    match &event.logical_key {
+                        Key::Named(NamedKey::Backspace) => {
                             if let Some(selection) = self.inner.selection {
                                 if !selection.is_caret() {
                                     self.text_mut().edit(selection.range(), "");
@@ -141,7 +140,7 @@ impl<T: EditableText> TextEditor<T> {
                                 Handled::No
                             }
                         }
-                        KeyCode::Delete => {
+                        Key::Named(NamedKey::Delete) => {
                             if let Some(selection) = self.inner.selection {
                                 if !selection.is_caret() {
                                     self.text_mut().edit(selection.range(), "");
@@ -163,7 +162,7 @@ impl<T: EditableText> TextEditor<T> {
                                 Handled::No
                             }
                         }
-                        KeyCode::Char(' ') => {
+                        Key::Named(NamedKey::Space) => {
                             let selection = self.inner.selection.unwrap_or(Selection {
                                 anchor: 0,
                                 active: 0,
@@ -181,23 +180,22 @@ impl<T: EditableText> TextEditor<T> {
                             ctx.submit_action(Action::TextChanged(contents));
                             Handled::Yes
                         }
-                        KeyCode::Enter => {
+                        Key::Named(NamedKey::Enter) => {
                             let contents = self.text().as_str().to_string();
                             ctx.submit_action(Action::TextEntered(contents));
                             Handled::Yes
                         }
-                        KeyCode::Char(c) => {
+                        Key::Named(_) => Handled::No,
+                        Key::Character(c) => {
                             let selection = self.inner.selection.unwrap_or(Selection {
                                 anchor: 0,
                                 active: 0,
                                 active_affinity: Affinity::Downstream,
                                 h_pos: None,
                             });
-                            let c = format!("{}", c);
-                            let len = c.len();
-                            self.text_mut().edit(selection.range(), c);
+                            self.text_mut().edit(selection.range(), &**c);
                             self.inner.selection = Some(Selection::caret(
-                                selection.min() + len,
+                                selection.min() + c.len(),
                                 // We have just added this character, so we are "affined" with it
                                 Affinity::Downstream,
                             ));
@@ -205,38 +203,17 @@ impl<T: EditableText> TextEditor<T> {
                             ctx.submit_action(Action::TextChanged(contents));
                             Handled::Yes
                         }
-                        crossterm::event::KeyCode::Left => Handled::No,
-                        crossterm::event::KeyCode::Right => Handled::No,
-                        crossterm::event::KeyCode::Up => Handled::No,
-                        crossterm::event::KeyCode::Down => Handled::No,
-                        crossterm::event::KeyCode::Home => Handled::No,
-                        crossterm::event::KeyCode::End => Handled::No,
-                        crossterm::event::KeyCode::PageUp => Handled::No,
-                        crossterm::event::KeyCode::PageDown => Handled::No,
-                        crossterm::event::KeyCode::Tab => Handled::No,
-                        crossterm::event::KeyCode::BackTab => Handled::No,
-                        crossterm::event::KeyCode::Insert => Handled::No,
-                        crossterm::event::KeyCode::F(_) => Handled::No,
-                        crossterm::event::KeyCode::Null => Handled::No,
-                        crossterm::event::KeyCode::Esc => Handled::No,
-                        crossterm::event::KeyCode::CapsLock => Handled::No,
-                        crossterm::event::KeyCode::ScrollLock => Handled::No,
-                        crossterm::event::KeyCode::NumLock => Handled::No,
-                        crossterm::event::KeyCode::PrintScreen => Handled::No,
-                        crossterm::event::KeyCode::Pause => Handled::No,
-                        crossterm::event::KeyCode::Menu => Handled::No,
-                        crossterm::event::KeyCode::KeypadBegin => Handled::No,
-                        crossterm::event::KeyCode::Media(_) => Handled::No,
-                        crossterm::event::KeyCode::Modifier(_) => Handled::No,
+                        Key::Unidentified(_) => Handled::No,
+                        Key::Dead(d) => {
+                            eprintln!("Got dead key {d:?}. Will handle");
+                            Handled::No
+                        }
                     }
-                } else if event
-                    .modifiers
-                    .intersects(Modifiers::CONTROL | Modifiers::SUPER)
+                } else if mods.control_key() || mods.super_key()
+                // TODO: do things differently on mac, rather than capturing both super and control.
                 {
-                    // TODO: do things differently on mac, rather than capturing
-                    // both super and control.
-                    match &event.code {
-                        KeyCode::Backspace => {
+                    match &event.logical_key {
+                        Key::Named(NamedKey::Backspace) => {
                             if let Some(selection) = self.inner.selection {
                                 if !selection.is_caret() {
                                     self.text_mut().edit(selection.range(), "");
@@ -256,7 +233,7 @@ impl<T: EditableText> TextEditor<T> {
                                 Handled::No
                             }
                         }
-                        KeyCode::Delete => {
+                        Key::Named(NamedKey::Delete) => {
                             if let Some(selection) = self.inner.selection {
                                 if !selection.is_caret() {
                                     self.text_mut().edit(selection.range(), "");
@@ -284,7 +261,8 @@ impl<T: EditableText> TextEditor<T> {
                     Handled::No
                 }
             }
-            TextEvent::KeyboardKey(_) => Handled::No,
+            TextEvent::KeyboardKey(_, _) => Handled::No,
+            TextEvent::ModifierChange(_) => Handled::No,
             TextEvent::FocusChange(_) => Handled::No,
         }
     }

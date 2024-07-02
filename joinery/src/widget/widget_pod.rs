@@ -10,6 +10,7 @@ use crate::kurbo::{Affine, Insets, Point, Rect, Shape, Size};
 use crate::paint_scene_helpers::stroke;
 use crate::render_root::RenderRootState;
 use crate::theme::get_debug_color;
+use crate::vello::Scene;
 use crate::widget::{WidgetRef, WidgetState};
 use crate::{
     AccessCtx, BoxConstraints, EventCtx, InternalLifeCycle, LayoutCtx, LifeCycle, LifeCycleCtx,

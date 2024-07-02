@@ -6,15 +6,16 @@
 use std::borrow::Cow;
 use std::ops::{Deref, DerefMut, Range};
 
-use crate::terminal::event::{KeyCode, KeyEventKind, Modifiers};
-use crate::vello::Scene;
 use kurbo::{Affine, Line, Point, Stroke};
 use parley::context::RangedBuilder;
 use parley::{FontContext, LayoutContext};
-use peniko::{Brush, Color};
 use unicode_segmentation::{GraphemeCursor, UnicodeSegmentation};
 
 use crate::event::{PointerButton, PointerState};
+use crate::terminal::event::KeyEvent;
+use crate::terminal::keyboard;
+use crate::vello::peniko::{Brush, Color};
+use crate::vello::Scene;
 use crate::{Handled, TextEvent};
 
 use super::{TextBrush, TextLayout, TextStorage};
@@ -72,7 +73,7 @@ impl<T: Selectable> TextWithSelection<T> {
                 .layout
                 .cursor_for_point(Point::new(position.x, position.y));
             tracing::warn!("Got cursor point without getting affinity");
-            if state.mods.intersects(Modifiers::SHIFT) {
+            if state.mods.state().shift_key() {
                 if let Some(selection) = self.selection.as_mut() {
                     selection.active = position.insert_point;
                     selection.active_affinity = Affinity::Downstream;
@@ -116,17 +117,16 @@ impl<T: Selectable> TextWithSelection<T> {
     }
 
     pub fn text_event(&mut self, event: &TextEvent) -> Handled {
+        use keyboard::{Key, NamedKey};
         match event {
-            TextEvent::KeyboardKey(key) if key.kind == KeyEventKind::Press => {
-                let key = shortcut_key(key);
-                match key.code {
-                    KeyCode::Left => {
-                        if key.modifiers.intersects(Modifiers::SHIFT) {
-                            // TODO: Expand selection
+            TextEvent::KeyboardKey(key, mods) if key.state.is_pressed() => {
+                match shortcut_key(key) {
+                    Key::Named(NamedKey::ArrowLeft) => {
+                        if mods.shift_key() {
                         } else {
                             let t = self.text();
                             if let Some(selection) = self.selection {
-                                if key.modifiers.intersects(Modifiers::CONTROL) {
+                                if mods.control_key() {
                                     let offset = t.prev_word_offset(selection.active).unwrap_or(0);
                                     self.selection =
                                         Some(Selection::caret(offset, Affinity::Downstream));
@@ -140,13 +140,13 @@ impl<T: Selectable> TextWithSelection<T> {
                         }
                         Handled::Yes
                     }
-                    KeyCode::Right => {
-                        if key.modifiers.intersects(Modifiers::SHIFT) {
+                    Key::Named(NamedKey::ArrowRight) => {
+                        if mods.shift_key() {
                             // TODO: Expand selection
                         } else {
                             let t = self.text();
                             if let Some(selection) = self.selection {
-                                if key.modifiers.intersects(Modifiers::CONTROL) {
+                                if mods.control_key() {
                                     if let Some(o) = t.next_word_offset(selection.active) {
                                         self.selection =
                                             Some(Selection::caret(o, Affinity::Upstream));
@@ -158,20 +158,16 @@ impl<T: Selectable> TextWithSelection<T> {
                         }
                         Handled::Yes
                     }
-                    crossterm::event::KeyCode::Char(chr) => match chr {
-                        'a' if key.modifiers.intersects(
-                            Modifiers::CONTROL | Modifiers::SUPER, /* macOS, yes this is a hack */
-                        ) =>
+                    Key::Named(_) => Handled::No,
+                    Key::Character(chr) => match &*chr {
+                        "a" if mods.control_key() || /* macOS, yes this is a hack */ mods.super_key() =>
                         {
                             self.selection =
                                 Some(Selection::new(0, self.text().len(), Affinity::Downstream));
                             self.needs_selection_update = true;
                             Handled::Yes
                         }
-                        'c' if key.modifiers.intersects(
-                            Modifiers::CONTROL | Modifiers::SUPER, /* macOS, yes this is a hack */
-                        ) =>
-                        {
+                        "c" if mods.control_key() || mods.super_key() => {
                             let selection = self.selection.unwrap_or(Selection {
                                 anchor: 0,
                                 active: 0,
@@ -190,33 +186,15 @@ impl<T: Selectable> TextWithSelection<T> {
                         }
                         _ => Handled::No,
                     },
-                    crossterm::event::KeyCode::Backspace => Handled::No,
-                    crossterm::event::KeyCode::Enter => Handled::No,
-                    crossterm::event::KeyCode::Up => Handled::No,
-                    crossterm::event::KeyCode::Down => Handled::No,
-                    crossterm::event::KeyCode::Home => Handled::No,
-                    crossterm::event::KeyCode::End => Handled::No,
-                    crossterm::event::KeyCode::PageUp => Handled::No,
-                    crossterm::event::KeyCode::PageDown => Handled::No,
-                    crossterm::event::KeyCode::Tab => Handled::No,
-                    crossterm::event::KeyCode::BackTab => Handled::No,
-                    crossterm::event::KeyCode::Delete => Handled::No,
-                    crossterm::event::KeyCode::Insert => Handled::No,
-                    crossterm::event::KeyCode::F(_) => Handled::No,
-                    crossterm::event::KeyCode::Null => Handled::No,
-                    crossterm::event::KeyCode::Esc => Handled::No,
-                    crossterm::event::KeyCode::CapsLock => Handled::No,
-                    crossterm::event::KeyCode::ScrollLock => Handled::No,
-                    crossterm::event::KeyCode::NumLock => Handled::No,
-                    crossterm::event::KeyCode::PrintScreen => Handled::No,
-                    crossterm::event::KeyCode::Pause => Handled::No,
-                    crossterm::event::KeyCode::Menu => Handled::No,
-                    crossterm::event::KeyCode::KeypadBegin => Handled::No,
-                    crossterm::event::KeyCode::Media(_) => Handled::No,
-                    crossterm::event::KeyCode::Modifier(_) => Handled::No,
+                    Key::Unidentified(_) => todo!(),
+                    Key::Dead(_) => todo!(),
                 }
             }
-            TextEvent::KeyboardKey(_) => Handled::No,
+            TextEvent::KeyboardKey(_, _) => Handled::No,
+            TextEvent::ModifierChange(_) => {
+                // TODO: What does it mean to "handle" this change?
+                Handled::No
+            }
             TextEvent::FocusChange(_) => {
                 // TODO: What does it mean to "handle" this change
                 // TODO: Set our highlighting colour to a lighter blue if window unfocused
@@ -300,10 +278,17 @@ impl<T: Selectable> TextWithSelection<T> {
 /// Get the key which should be used for shortcuts from the underlying event
 ///
 /// `key_without_modifiers` is only available on some platforms
-fn shortcut_key(key: &crate::terminal::event::KeyEvent) -> crate::terminal::event::KeyEvent {
-    // We think it will be rare that users are using a physical keyboard with Android,
-    // and so we don't really need to worry *too much* about the text selection shortcuts
-    *key
+fn shortcut_key(key: &KeyEvent) -> keyboard::Key {
+    unimplemented!("deal with this")
+    // #[cfg(not(any(target_os = "android", target_os = "ios")))]
+    // {
+    //     use winit::platform::modifier_supplement::KeyEventExtModifierSupplement;
+    //     key.key_without_modifiers()
+    // }
+    // #[cfg(any(target_os = "android", target_os = "ios"))]
+    // // We think it will be rare that users are using a physical keyboard with Android,
+    // // and so we don't really need to worry *too much* about the text selection shortcuts
+    // key.logical_key.clone()
 }
 
 impl<T: Selectable> Deref for TextWithSelection<T> {

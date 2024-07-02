@@ -3,11 +3,10 @@
 
 use std::collections::VecDeque;
 
-use parley::{FontContext, LayoutContext};
-use crate::terminal::event::KeyEvent;
 use crate::vello::Scene;
 use accesskit::{ActionRequest, NodeBuilder, Tree, TreeUpdate};
 use kurbo::Affine;
+use parley::{FontContext, LayoutContext};
 use peniko::{Color, Fill};
 use tracing::{debug, info_span, warn};
 
@@ -306,7 +305,7 @@ impl RenderRoot {
         let handled = {
             ctx.global_state
                 .debug_logger
-                .push_importan_span(&format!("TEXT_EVENT {}", event.short_name()));
+                .push_important_span(&format!("TEXT_EVENT {}", event.short_name()));
             let _span = info_span!("text_event").entered();
             if !event.is_high_density() {
                 debug!("Running ON_TEXT_EVENT pass with {}", event.short_name());
@@ -326,16 +325,13 @@ impl RenderRoot {
         };
 
         // If event is tab we handle focus
-        if let TextEvent::KeyboardKey(key) = event {
-            if handled == Handled::No {
-                let forward = None;
-                if key.code == KeyEvent::Tab {
-                    Some(true)
-                } else if key.code == KeyEvent::BackTab {
-                    Some(false)
-                }
-                if let Some(forward) = forward {
-                    self.state.next_focused_widget = self.widget_from_focus_chain(forward);
+        if let TextEvent::KeyboardKey(key, mods) = event {
+            use crate::terminal::keyboard::{Key, NamedKey};
+            if handled == Handled::No && key.logical_key == Key::Named(NamedKey::Tab) {
+                if !mods.shift_key() {
+                    self.state.next_focused_widget = self.widget_from_focus_chain(true);
+                } else {
+                    self.state.next_focused_widget = self.widget_from_focus_chain(false);
                 }
             }
         }

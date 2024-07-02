@@ -3,10 +3,6 @@
 
 //! Tools and infrastructure for testing widgets.
 
-use std::num::NonZeroUsize;
-
-use image::io::Reader as ImageReader;
-use image::{Rgba, RgbaImage};
 use super::screenshots::get_image_diff;
 use super::snapshot_utils::get_cargo_workspace;
 use crate::action::Action;
@@ -16,6 +12,8 @@ use crate::render_root::{RenderRoot, RenderRootSignal, WindowSizePolicy};
 use crate::tracing_backend::try_init_tracing;
 use crate::widget::{WidgetMut, WidgetRef};
 use crate::{Color, Handled, Point, Size, Vec2, Widget, WidgetId};
+use image::io::Reader as ImageReader;
+use image::{Rgba, RgbaImage};
 
 // TODO - Get shorter names
 // TODO - Make them associated consts
@@ -232,99 +230,69 @@ impl TestHarness {
     // TODO - Should be async?
     /// Create a bitmap (an array of pixels), paint the window and return the bitmap as an 8-bits-per-channel RGB image.
     pub fn render(&mut self) -> RgbaImage {
-        let (scene, _tree_update) = self.render_root.redraw();
+        let (_scene, _tree_update) = self.render_root.redraw();
         if std::env::var("SKIP_RENDER_TESTS").is_ok_and(|it| !it.is_empty()) {
             return RgbaImage::from_pixel(1, 1, Rgba([255, 255, 255, 255]));
         }
-        let mut context = RenderContext::new();
-        let device_id =
-            pollster::block_on(context.device(None)).expect("No compatible device found");
-        let device_handle = &mut context.devices[device_id];
-        let device = &device_handle.device;
-        let queue = &device_handle.queue;
-        let mut renderer = vello::Renderer::new(
-            device,
-            RendererOptions {
-                surface_format: None,
-                // TODO - Examine this value
-                use_cpu: true,
-                num_init_threads: NonZeroUsize::new(1),
-                // TODO - Examine this value
-                antialiasing_support: vello::AaSupport::area_only(),
-            },
-        )
-        .expect("Got non-Send/Sync error from creating renderer");
 
         // TODO - fix window_size
         let (width, height) = (self.window_size.width, self.window_size.height);
-        let render_params = vello::RenderParams {
-            // TODO - Parameterize
-            base_color: self.background_color,
-            width,
-            height,
-            antialiasing_method: vello::AaConfig::Area,
-        };
-
-        let size = Extent3d {
-            width,
-            height,
-            depth_or_array_layers: 1,
-        };
-        let target = device.create_texture(&TextureDescriptor {
-            label: Some("Target texture"),
-            size,
-            mip_level_count: 1,
-            sample_count: 1,
-            dimension: wgpu::TextureDimension::D2,
-            format: TextureFormat::Rgba8Unorm,
-            usage: TextureUsages::STORAGE_BINDING | TextureUsages::COPY_SRC,
-            view_formats: &[],
-        });
-        let view = target.create_view(&wgpu::TextureViewDescriptor::default());
-        renderer
-            .render_to_texture(device, queue, &scene, &view, &render_params)
-            .expect("Got non-Send/Sync error from rendering");
-        let padded_byte_width = (width * 4).next_multiple_of(256);
-        let buffer_size = padded_byte_width as u64 * height as u64;
-        let buffer = device.create_buffer(&BufferDescriptor {
-            label: Some("val"),
-            size: buffer_size,
-            usage: BufferUsages::MAP_READ | BufferUsages::COPY_DST,
-            mapped_at_creation: false,
-        });
-        let mut encoder = device.create_command_encoder(&CommandEncoderDescriptor {
-            label: Some("Copy out buffer"),
-        });
-        encoder.copy_texture_to_buffer(
-            target.as_image_copy(),
-            ImageCopyBuffer {
-                buffer: &buffer,
-                layout: wgpu::ImageDataLayout {
-                    offset: 0,
-                    bytes_per_row: Some(padded_byte_width),
-                    rows_per_image: None,
-                },
-            },
-            size,
+        let _backend = ratatui::backend::TestBackend::new(
+            width.try_into().expect("width fits in a u16"),
+            height.try_into().expect("height fits in a u16"),
         );
 
-        queue.submit([encoder.finish()]);
-        let buf_slice = buffer.slice(..);
+        // TODO - Parameterize, and actually use this
+        // self.background_color
 
-        let (sender, receiver) = futures_intrusive::channel::shared::oneshot_channel();
-        buf_slice.map_async(wgpu::MapMode::Read, move |v| sender.send(v).unwrap());
-        let recv_result = block_on_wgpu(device, receiver.receive()).expect("channel was closed");
-        recv_result.expect("failed to map buffer");
+        // TODO: get frame
+        // TODO: render into frame
 
-        let data = buf_slice.get_mapped_range();
-        let mut result_unpadded =
-            Vec::<u8>::with_capacity((width * height * 4).try_into().unwrap());
-        for row in 0..height {
-            let start = (row * padded_byte_width).try_into().unwrap();
-            result_unpadded.extend(&data[start..start + (width * 4) as usize]);
-        }
+        // renderer
+        //    .render_to_texture(device, queue, &scene, &view, &render_params)
+        //    .expect("Got non-Send/Sync error from rendering");
+        // let padded_byte_width = (width * 4).next_multiple_of(256);
+        // let buffer_size = padded_byte_width as u64 * height as u64;
+        // let buffer = device.create_buffer(&BufferDescriptor {
+        //     label: Some("val"),
+        //     size: buffer_size,
+        //     usage: BufferUsages::MAP_READ | BufferUsages::COPY_DST,
+        //     mapped_at_creation: false,
+        // });
+        // let mut encoder = device.create_command_encoder(&CommandEncoderDescriptor {
+        //     label: Some("Copy out buffer"),
+        // });
+        // encoder.copy_texture_to_buffer(
+        //     target.as_image_copy(),
+        //     ImageCopyBuffer {
+        //         buffer: &buffer,
+        //         layout: wgpu::ImageDataLayout {
+        //             offset: 0,
+        //             bytes_per_row: Some(padded_byte_width),
+        //             rows_per_image: None,
+        //         },
+        //     },
+        //     size,
+        // );
 
-        RgbaImage::from_vec(width, height, result_unpadded).expect("failed to create image")
+        // queue.submit([encoder.finish()]);
+        // let buf_slice = buffer.slice(..);
+
+        // let (sender, receiver) = futures_intrusive::channel::shared::oneshot_channel();
+        // buf_slice.map_async(wgpu::MapMode::Read, move |v| sender.send(v).unwrap());
+        // let recv_result = block_on_wgpu(device, receiver.receive()).expect("channel was closed");
+        // recv_result.expect("failed to map buffer");
+
+        // let data = buf_slice.get_mapped_range();
+        // let mut result_unpadded =
+        //     Vec::<u8>::with_capacity((width * height * 4).try_into().unwrap());
+        // for row in 0..height {
+        //     let start = (row * padded_byte_width).try_into().unwrap();
+        //     result_unpadded.extend(&data[start..start + (width * 4) as usize]);
+        // }
+        //
+        // RgbaImage::from_vec(width, height, result_unpadded).expect("failed to create image")
+        unimplemented!("finish me");
     }
 
     // --- MARK: EVENT HELPERS ---
@@ -389,9 +357,12 @@ impl TestHarness {
     // TODO - Mock Winit keyboard events
     pub fn keyboard_type_chars(&mut self, text: &str) {
         // For each character
-        for c in text.split("").filter(|s| !s.is_empty()) {
-            let event = TextEvent::Ime(Ime::Commit(c.to_string()));
-            self.render_root.handle_text_event(event);
+        for _c in text.split("").filter(|s| !s.is_empty()) {
+            unimplemented!(
+                "create a KeyEvent from the character, then call render_root.handle_text_event"
+            );
+            // let event = TextEvent::Ime(Ime::Commit(c.to_string()));
+            // self.render_root.handle_text_event(event);
         }
         self.process_state_after_event();
     }
