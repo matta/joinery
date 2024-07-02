@@ -278,7 +278,7 @@ impl<T: Selectable> TextWithSelection<T> {
 /// Get the key which should be used for shortcuts from the underlying event
 ///
 /// `key_without_modifiers` is only available on some platforms
-fn shortcut_key(key: &KeyEvent) -> keyboard::Key {
+fn shortcut_key(_key: &KeyEvent) -> keyboard::Key {
     unimplemented!("deal with this")
     // #[cfg(not(any(target_os = "android", target_os = "ios")))]
     // {

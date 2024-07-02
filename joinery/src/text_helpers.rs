@@ -3,9 +3,9 @@
 
 //! Helper functions for working with text in Masonry.
 
-use parley::Layout;
 use crate::vello::{kurbo::Affine, peniko::Fill, Scene};
 use kurbo::{Line, Rect, Stroke};
+use parley::Layout;
 
 use crate::{text2::TextBrush, WidgetId};
 
@@ -68,11 +68,6 @@ pub fn render_text(
                 .skew()
                 .map(|angle| Affine::skew(angle.to_radians().tan() as f64, 0.0));
             let style = glyph_run.style();
-            let coords = run
-                .normalized_coords()
-                .iter()
-                .map(|coord| crate::vello::skrifa::instance::NormalizedCoord::from_bits(*coord))
-                .collect::<Vec<_>>();
             let text_brush = match &style.brush {
                 TextBrush::Normal(text_brush) => text_brush,
                 TextBrush::Highlight { text, fill } => {
@@ -101,14 +96,13 @@ pub fn render_text(
                 .transform(transform)
                 .glyph_transform(glyph_xform)
                 .font_size(font_size)
-                .normalized_coords(&coords)
                 .draw(
                     Fill::NonZero,
                     glyph_run.glyphs().map(|glyph| {
                         let gx = x + glyph.x;
                         let gy = y - glyph.y;
                         x += glyph.advance;
-                        vello::glyph::Glyph {
+                        crate::vello::glyph::Glyph {
                             id: glyph.id as _,
                             x: gx,
                             y: gy,
