@@ -9,6 +9,7 @@
 
 use std::sync::Arc;
 
+use crate::vello::Scene;
 use accesskit::{DefaultActionVerb, Role};
 use masonry::app_driver::{AppDriver, DriverCtx};
 use masonry::dpi::LogicalSize;
@@ -20,7 +21,6 @@ use masonry::{
 };
 use smallvec::{smallvec, SmallVec};
 use tracing::{trace, trace_span, Span};
-use crate::vello::Scene;
 use winit::window::Window;
 
 #[derive(Clone)]

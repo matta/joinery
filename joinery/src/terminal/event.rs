@@ -147,7 +147,7 @@ impl Modifiers {
         self.mod_state(ModifiersKeys::RSUPER)
     }
 
-    fn mod_state(&self, modifier: ModifiersKeys) -> ModifiersKeyState {
+    fn mod_state(self, modifier: ModifiersKeys) -> ModifiersKeyState {
         if self.pressed_mods.contains(modifier) {
             ModifiersKeyState::Pressed
         } else {

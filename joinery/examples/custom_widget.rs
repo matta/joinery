@@ -7,6 +7,9 @@
 // On Windows platform, don't show a console when opening the app.
 #![windows_subsystem = "windows"]
 
+use crate::parley::layout::Alignment;
+use crate::parley::style::{FontFamily, FontStack, StyleProperty};
+use crate::vello::Scene;
 use accesskit::Role;
 use kurbo::Stroke;
 use masonry::app_driver::{AppDriver, DriverCtx};
@@ -17,12 +20,9 @@ use masonry::{
     LifeCycleCtx, PaintCtx, Point, PointerEvent, Rect, Size, StatusChange, TextEvent, Widget,
     WidgetId,
 };
-use crate::parley::layout::Alignment;
-use crate::parley::style::{FontFamily, FontStack, StyleProperty};
+use peniko::{Brush, Fill, Format, Image};
 use smallvec::SmallVec;
 use tracing::{trace_span, Span};
-use peniko::{Brush, Fill, Format, Image};
-use crate::vello::Scene;
 use winit::window::Window;
 
 struct Driver;

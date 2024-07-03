@@ -1,11 +1,11 @@
 // Copyright 2024 the Xilem Authors
 // SPDX-License-Identifier: Apache-2.0
 
+use crate::vello::Scene;
 use accesskit::Role;
 use kurbo::Point;
 use smallvec::SmallVec;
 use tracing::{trace_span, Span};
-use crate::vello::Scene;
 
 use crate::widget::{WidgetMut, WidgetPod, WidgetRef};
 use crate::{

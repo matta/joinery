@@ -3,14 +3,14 @@
 
 //! A label widget.
 
+use crate::vello::Scene;
 use accesskit::Role;
 use kurbo::{Affine, Point, Size};
 use parley::layout::Alignment;
 use parley::style::{FontFamily, FontStack};
+use peniko::BlendMode;
 use smallvec::SmallVec;
 use tracing::{trace, trace_span, Span};
-use peniko::BlendMode;
-use crate::vello::Scene;
 
 use crate::text2::{TextBrush, TextLayout, TextStorage};
 use crate::widget::{WidgetMut, WidgetRef};

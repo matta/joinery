@@ -3,11 +3,11 @@
 
 //! A widget that arranges its children in a one-dimensional array.
 
+use crate::vello::Scene;
 use accesskit::Role;
 use kurbo::{Affine, Stroke};
 use smallvec::SmallVec;
 use tracing::{trace, trace_span, Span};
-use crate::vello::Scene;
 
 use crate::kurbo::common::FloatExt;
 use crate::kurbo::{Line, Vec2};

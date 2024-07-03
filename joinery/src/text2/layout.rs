@@ -5,15 +5,13 @@
 
 use std::rc::Rc;
 
+use crate::vello::Scene;
+use kurbo::{Affine, Line, Point, Rect, Size};
 use parley::context::RangedBuilder;
 use parley::fontique::{Style, Weight};
 use parley::layout::{Alignment, Cursor};
-use parley::style::{
-    Brush as BrushTrait, FontFamily, FontStack, GenericFamily, StyleProperty,
-};
+use parley::style::{Brush as BrushTrait, FontFamily, FontStack, GenericFamily, StyleProperty};
 use parley::{FontContext, Layout, LayoutContext};
-use crate::vello::Scene;
-use kurbo::{Affine, Line, Point, Rect, Size};
 use peniko::{self, Color, Gradient};
 
 use super::{Link, TextStorage};

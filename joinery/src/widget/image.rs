@@ -4,12 +4,12 @@
 //! An Image widget.
 //! Please consider using SVG and the SVG widget as it scales much better.
 
+use crate::vello::Scene;
 use accesskit::Role;
 use kurbo::Affine;
+use peniko::{BlendMode, Image as ImageBuf};
 use smallvec::SmallVec;
 use tracing::{trace, trace_span, Span};
-use peniko::{BlendMode, Image as ImageBuf};
-use crate::vello::Scene;
 
 use crate::widget::{FillStrat, WidgetMut, WidgetRef};
 use crate::{

@@ -1,5 +1,7 @@
 use crate::{
-    app_driver::AppDriver, render_root::{RenderRoot, WindowSizePolicy}, PointerState, TextEvent, Widget, WindowEvent
+    app_driver::AppDriver,
+    render_root::{RenderRoot, WindowSizePolicy},
+    PointerState, TextEvent, Widget, WindowEvent,
 };
 
 use std::io::stdout;
@@ -8,7 +10,10 @@ use dpi::PhysicalSize;
 use ratatui::{
     backend::CrosstermBackend,
     crossterm::{
-        self, event::{KeyCode, KeyEventKind}, terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen}, ExecutableCommand
+        self,
+        event::{KeyCode, KeyEventKind},
+        terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+        ExecutableCommand,
     },
     style::Stylize,
     widgets::Paragraph,
@@ -22,7 +27,7 @@ struct MainState {
     pointer_state: PointerState,
     app_driver: Box<dyn AppDriver>,
     terminal: Terminal<CrosstermBackend<std::io::Stdout>>,
-     quit: bool,
+    quit: bool,
 }
 impl MainState {
     fn crossterm_event(&mut self, event: crossterm::event::Event) {
@@ -30,21 +35,19 @@ impl MainState {
         use crossterm::event::Event;
         match event {
             Event::FocusGained => {
-                self.render_root.handle_text_event(
-                    TextEvent::FocusChange(true)
-                );
+                self.render_root
+                    .handle_text_event(TextEvent::FocusChange(true));
             }
             Event::FocusLost => {
-                self.render_root.handle_text_event(
-                    TextEvent::FocusChange(false)
-                );
-            },
+                self.render_root
+                    .handle_text_event(TextEvent::FocusChange(false));
+            }
             Event::Key(event) => {
                 // Map to these possible Joinery events:
                 //
                 // - TextEvent::ModifierChange
                 // - TextEvent::KeyboardKey
-                // 
+                //
                 if event.kind == KeyEventKind::Press && event.code == KeyCode::Char('q') {
                     tracing::info!("Got q, quitting");
                     self.quit = true;
@@ -61,14 +64,20 @@ impl MainState {
                 let width: u32 = width.into();
                 let height: u32 = height.into();
                 let size = PhysicalSize::new(width, height);
-                self.render_root.handle_window_event(WindowEvent::Resize(size));
+                self.render_root
+                    .handle_window_event(WindowEvent::Resize(size));
             }
         }
     }
-    
+
     fn crossterm_key_event(&self, event: crossterm::event::KeyEvent) {
         // Unpack the event
-        let crossterm::event::KeyEvent {code, modifiers, kind, state} = event;
+        let crossterm::event::KeyEvent {
+            code,
+            modifiers,
+            kind,
+            state,
+        } = event;
 
         // TODO: check if Joinery can use the information in `state`
         let _ = state;
@@ -145,7 +154,7 @@ pub fn run_with(
 }
 
 fn run_app(main_state: &mut MainState) -> Result<(), std::io::Error> {
-    loop {
+    while !main_state.quit {
         main_state.terminal.draw(|frame| {
             let area = frame.size();
             frame.render_widget(
@@ -155,9 +164,8 @@ fn run_app(main_state: &mut MainState) -> Result<(), std::io::Error> {
                 area,
             );
         })?;
-        main_state.crossterm_event()
-        if event::poll(std::time::Duration::from_millis(16))? {
-            main_state.crossterm_event(event::read()?);
+        if crossterm::event::poll(std::time::Duration::from_millis(16))? {
+            main_state.crossterm_event(crossterm::event::read()?);
         }
     }
     Ok(())

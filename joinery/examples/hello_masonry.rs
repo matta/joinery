@@ -8,7 +8,6 @@
 #![windows_subsystem = "windows"]
 
 use masonry::app_driver::{AppDriver, DriverCtx};
-use masonry::dpi::LogicalSize;
 use masonry::widget::{Button, Flex, Label, RootWidget};
 use masonry::{Action, WidgetId};
 
@@ -38,8 +37,6 @@ pub fn main() {
         .with_child(label)
         .with_spacer(VERTICAL_WIDGET_SPACING)
         .with_child(button);
-
-    let window_size = LogicalSize::new(400.0, 400.0);
 
     masonry::event_loop_runner::run(RootWidget::new(main_widget), Driver).unwrap();
 }

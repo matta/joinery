@@ -48,9 +48,9 @@ pub enum PointerButton {
 }
 
 // TODO - How can RenderRoot express "I started a drag-and-drop op"?
-// TODO - Touchpad, Touch, AxisMotion
+// TODO - TouchPad, Touch, AxisMotion
 // TODO - How to handle CursorEntered?
-// Note to self: Events like "pointerenter", "pointerleave" are handled differently at the Widget level. But that's weird because WidgetPod can distribute them. Need to think about this again.
+// Note to self: Events like "PointerEnter", "PointerLeave" are handled differently at the Widget level. But that's weird because WidgetPod can distribute them. Need to think about this again.
 #[derive(Debug, Clone)]
 pub enum PointerEvent {
     PointerDown(PointerButton, PointerState),

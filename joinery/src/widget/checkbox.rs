@@ -3,11 +3,11 @@
 
 //! A checkbox widget.
 
+use crate::vello::Scene;
 use accesskit::{DefaultActionVerb, Role, Toggled};
 use kurbo::{Affine, Stroke};
 use smallvec::{smallvec, SmallVec};
 use tracing::{trace, trace_span, Span};
-use crate::vello::Scene;
 
 use crate::action::Action;
 use crate::kurbo::{BezPath, Cap, Join, Size};

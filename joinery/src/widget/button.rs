@@ -3,10 +3,10 @@
 
 //! A button widget.
 
+use crate::vello::Scene;
 use accesskit::{DefaultActionVerb, Role};
 use smallvec::{smallvec, SmallVec};
 use tracing::{trace, trace_span, Span};
-use crate::vello::Scene;
 
 use crate::action::Action;
 use crate::event::PointerButton;

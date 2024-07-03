@@ -6,10 +6,10 @@ use std::num::NonZeroU64;
 use std::ops::{Deref, DerefMut};
 use std::sync::atomic::{AtomicU64, Ordering};
 
+use crate::vello::Scene;
 use accesskit::Role;
 use smallvec::SmallVec;
 use tracing::{trace_span, Span};
-use crate::vello::Scene;
 
 use crate::event::{AccessEvent, PointerEvent, StatusChange, TextEvent};
 use crate::widget::WidgetRef;

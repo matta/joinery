@@ -3,10 +3,10 @@
 
 //! A widget which splits an area in two, with a settable ratio, and optional draggable resizing.
 
+use crate::vello::Scene;
 use accesskit::Role;
 use smallvec::{smallvec, SmallVec};
 use tracing::{trace, trace_span, warn, Span};
-use crate::vello::Scene;
 
 use crate::dpi::LogicalPosition;
 use crate::event::PointerButton;

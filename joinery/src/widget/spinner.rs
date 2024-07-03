@@ -5,11 +5,11 @@
 
 use std::f64::consts::PI;
 
+use crate::vello::Scene;
 use accesskit::Role;
 use kurbo::{Affine, Cap, Stroke};
 use smallvec::SmallVec;
 use tracing::{trace, trace_span, Span};
-use crate::vello::Scene;
 
 use crate::kurbo::Line;
 use crate::widget::{WidgetMut, WidgetRef};

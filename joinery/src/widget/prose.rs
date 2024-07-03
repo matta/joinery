@@ -1,6 +1,7 @@
 // Copyright 2018 the Xilem Authors and the Druid Authors
 // SPDX-License-Identifier: Apache-2.0
 
+use crate::vello::{peniko::BlendMode, Scene};
 use accesskit::Role;
 use kurbo::{Affine, Point, Size};
 use parley::{
@@ -9,7 +10,6 @@ use parley::{
 };
 use smallvec::SmallVec;
 use tracing::{trace, trace_span, Span};
-use crate::vello::{peniko::BlendMode, Scene};
 
 use crate::{
     text2::{TextBrush, TextStorage, TextWithSelection},

@@ -16,7 +16,7 @@ use image::io::Reader as ImageReader;
 use image::{Rgba, RgbaImage};
 
 // TODO - Get shorter names
-// TODO - Make them associated consts
+// TODO - Make them associated constants
 /// Default canvas size for tests.
 pub const HARNESS_DEFAULT_SIZE: Size = Size::new(400., 400.);
 
@@ -359,13 +359,14 @@ impl TestHarness {
     pub fn keyboard_type_chars(&mut self, text: &str) {
         // For each character
         for _c in text.split("").filter(|s| !s.is_empty()) {
-            unimplemented!(
-                "create a KeyEvent from the character, then call render_root.handle_text_event"
-            );
+            // TODO: create a KeyEvent from the character, then call
+            // render_root.handle_text_event
+            //
             // let event = TextEvent::Ime(Ime::Commit(c.to_string()));
             // self.render_root.handle_text_event(event);
         }
         self.process_state_after_event();
+        todo!("write the loop above");
     }
 
     #[cfg(FALSE)]
