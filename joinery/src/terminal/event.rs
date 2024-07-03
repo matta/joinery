@@ -1,6 +1,6 @@
 use smol_str::SmolStr;
 
-use super::keyboard::{self, ModifiersKeyState, ModifiersKeys};
+use super::keyboard::{self, ModifiersKeyState, ModifiersKeys, ModifiersState};
 
 /// Describes a keyboard input targeting a window.
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
@@ -168,60 +168,5 @@ impl ElementState {
     /// True if `self == Pressed`.
     pub fn is_pressed(self) -> bool {
         self == ElementState::Pressed
-    }
-}
-
-bitflags::bitflags! {
-    /// Represents the state of the keyboard modifiers (shift, control, alt, etc.).
-    ///
-    /// **Note:** `SUPER`, `HYPER`, and `META` can only be read if
-    /// [`KeyboardEnhancementFlags::DISAMBIGUATE_ESCAPE_CODES`] has been enabled with
-    /// [`PushKeyboardEnhancementFlags`].
-    ///
-    /// Note: this taken directly from crossterm
-    #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize), serde(transparent))]
-    #[derive(Default, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-    pub struct ModifiersState: u8 {
-        const SHIFT =     0b1; // (1)
-        const ALT =       0b10;       // (2)
-        const CONTROL =   0b100; //      (4)
-        const SUPER =     0b1000;     // (8)
-        const HYPER =     0b10000;   //  (16)
-        const META =      0b100000;   // (32)
-        const CAPS_LOCK = 0b1000000; //  (64)
-        const NUM_LOCK =  0b10000000;  // (128)
-        const NONE = 0;
-    }
-}
-
-impl ModifiersState {
-    /// Returns `true` if the shift key is pressed.
-    pub fn shift_key(&self) -> bool {
-        self.intersects(Self::SHIFT)
-    }
-
-    /// Returns `true` if the control key is pressed.
-    pub fn control_key(&self) -> bool {
-        self.intersects(Self::CONTROL)
-    }
-
-    /// Returns `true` if the alt key is pressed.
-    pub fn alt_key(&self) -> bool {
-        self.intersects(Self::ALT)
-    }
-
-    /// Returns `true` if the super key is pressed.
-    pub fn super_key(&self) -> bool {
-        self.intersects(Self::SUPER)
-    }
-
-    /// Returns `true` if the hyper key is pressed.
-    pub fn hyper_key(&self) -> bool {
-        self.intersects(Self::HYPER)
-    }
-
-    /// Returns `true` if the meta key is pressed.
-    pub fn meta_key(&self) -> bool {
-        self.intersects(Self::META)
     }
 }

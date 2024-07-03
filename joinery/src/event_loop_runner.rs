@@ -19,6 +19,7 @@ use ratatui::{
     widgets::Paragraph,
     Terminal,
 };
+use smol_str::SmolStr;
 
 type EventLoopError = std::io::Error;
 
@@ -43,11 +44,6 @@ impl MainState {
                     .handle_text_event(TextEvent::FocusChange(false));
             }
             Event::Key(event) => {
-                // Map to these possible Joinery events:
-                //
-                // - TextEvent::ModifierChange
-                // - TextEvent::KeyboardKey
-                //
                 if event.kind == KeyEventKind::Press && event.code == KeyCode::Char('q') {
                     tracing::info!("Got q, quitting");
                     self.quit = true;
@@ -70,17 +66,214 @@ impl MainState {
         }
     }
 
-    fn crossterm_key_event(&self, event: crossterm::event::KeyEvent) {
-        // Unpack the event
-        let crossterm::event::KeyEvent {
-            code,
-            modifiers,
-            kind,
-            state,
-        } = event;
+    fn crossterm_key_event(&mut self, event: crossterm::event::KeyEvent) {
+        self.handle_crossterm_key_event(&event);
+    }
 
-        // TODO: check if Joinery can use the information in `state`
-        let _ = state;
+    fn handle_crossterm_key_modifiers(&mut self, event: &crossterm::event::KeyEvent) {
+        use crate::terminal::{event::Modifiers, keyboard::ModifiersState};
+        use crossterm::event::KeyModifiers;
+
+        let mut modifiers = Modifiers::default();
+
+        const MAPPINGS: [(KeyModifiers, ModifiersState); 4] = [
+            (KeyModifiers::SHIFT, ModifiersState::SHIFT),
+            (KeyModifiers::CONTROL, ModifiersState::CONTROL),
+            (KeyModifiers::ALT, ModifiersState::ALT),
+            (KeyModifiers::SUPER, ModifiersState::SUPER),
+            // (KeyModifiers::HYPER, no equiavlent),
+            // (KeyModifiers::META, no equivalent),
+        ];
+        for (a, b) in MAPPINGS {
+            if event.modifiers.contains(a) {
+                modifiers.state.insert(b);
+            }
+        }
+
+        // if let crossterm::event::KeyCode::Modifier(modifier) = event.code {
+        //     // We could possibly track the state of individual modifier keys
+        //     // by looking at KeyCode::Modifier, but this is tricky work for
+        //     // dubious value, so we do nothing.
+        // }
+
+        if self.pointer_state.mods != modifiers {
+            self.pointer_state.mods = modifiers;
+            self.render_root
+                .handle_text_event(TextEvent::ModifierChange(modifiers.state()));
+        }
+    }
+
+    fn handle_crossterm_key_event(&mut self, event: &crossterm::event::KeyEvent) {
+        use crate::terminal::keyboard::{Key, ModifiersState, NamedKey};
+
+        self.handle_crossterm_key_modifiers(event);
+
+        // The textual representation of the keyboard event. This is set as a
+        // side effect of computing the logical key.
+        let mut text: Option<SmolStr> = None;
+
+        let logical_key: Option<crate::terminal::keyboard::Key> = match event.code {
+            KeyCode::Backspace => Some(Key::Named(crate::terminal::keyboard::NamedKey::Backspace)),
+            KeyCode::Enter => Some(Key::Named(NamedKey::Enter)),
+            KeyCode::Left => Some(Key::Named(NamedKey::ArrowLeft)),
+            KeyCode::Right => Some(Key::Named(NamedKey::ArrowRight)),
+            KeyCode::Up => Some(Key::Named(NamedKey::ArrowUp)),
+            KeyCode::Down => Some(Key::Named(NamedKey::ArrowDown)),
+            KeyCode::Home => Some(Key::Named(NamedKey::Home)),
+            KeyCode::End => Some(Key::Named(NamedKey::End)),
+            KeyCode::PageUp => Some(Key::Named(NamedKey::PageUp)),
+            KeyCode::PageDown => Some(Key::Named(NamedKey::PageDown)),
+            KeyCode::Tab => Some(Key::Named(NamedKey::Tab)),
+            KeyCode::BackTab => {
+                assert!(
+                    self.pointer_state
+                        .mods
+                        .state
+                        .contains(ModifiersState::SHIFT),
+                    "BackTab without shift modifier"
+                );
+                Some(Key::Named(NamedKey::Tab))
+            }
+            KeyCode::Delete => Some(Key::Named(NamedKey::Delete)),
+            KeyCode::Insert => Some(Key::Named(NamedKey::Insert)),
+            KeyCode::F(n) => translate_function_key_number(n),
+            KeyCode::Char(ch) => {
+                let ch: SmolStr = ch.to_string().into();
+                text = Some(ch.clone());
+                Some(Key::Character(ch))
+            }
+            KeyCode::Null => {
+                tracing::warn!("Received KeyCode::Null from crossterm (ignoring)");
+                None
+            }
+            KeyCode::Esc => Some(Key::Named(NamedKey::Escape)),
+            KeyCode::CapsLock => {
+                tracing::warn!("Received KeyCode::CapsLock from crossterm (ignoring)");
+                None
+            }
+            KeyCode::ScrollLock => {
+                tracing::warn!("Received KeyCode::ScrollLock from crossterm (ignoring)");
+                None
+            }
+            KeyCode::NumLock => {
+                tracing::warn!("Received KeyCode::NumLock from crossterm (ignoring)");
+                None
+            }
+            KeyCode::PrintScreen => Some(Key::Named(NamedKey::PrintScreen)),
+            KeyCode::Pause => Some(Key::Named(NamedKey::Pause)),
+            KeyCode::Menu => Some(Key::Named(NamedKey::ContextMenu)),
+            KeyCode::KeypadBegin => {
+                tracing::warn!("Received KeyCode::KeypadBegin from crossterm (ignoring)");
+                None
+            }
+            KeyCode::Media(key) => translate_media_key_code(key),
+            KeyCode::Modifier(key) => {
+                tracing::warn!(
+                    "Received KeyCode::Modifier({:?}) from crossterm (ignoring)",
+                    key
+                );
+                None
+            }
+        };
+
+        let state: crate::terminal::event::ElementState = match event.kind {
+            KeyEventKind::Press | KeyEventKind::Repeat => {
+                crate::terminal::event::ElementState::Pressed
+            }
+            KeyEventKind::Release => crate::terminal::event::ElementState::Released,
+        };
+
+        let repeat = event.kind == KeyEventKind::Repeat;
+
+        if let Some(logical_key) = logical_key {
+            let event = crate::terminal::event::KeyEvent {
+                logical_key,
+                text,
+                state,
+                repeat,
+            };
+            self.render_root.handle_text_event(TextEvent::KeyboardKey(
+                event,
+                self.pointer_state.mods.state(),
+            ));
+        } else {
+            tracing::warn!("Ignoring unknown key from crossterm: {:?}", event);
+        }
+    }
+}
+
+fn translate_function_key_number(n: u8) -> Option<crate::terminal::keyboard::Key> {
+    use crate::terminal::keyboard::{Key, NamedKey};
+
+    if (1..=35).contains(&n) {
+        let key = match n {
+            1 => NamedKey::F1,
+            2 => NamedKey::F2,
+            3 => NamedKey::F3,
+            4 => NamedKey::F4,
+            5 => NamedKey::F5,
+            6 => NamedKey::F6,
+            7 => NamedKey::F7,
+            8 => NamedKey::F8,
+            9 => NamedKey::F9,
+            10 => NamedKey::F10,
+            11 => NamedKey::F11,
+            12 => NamedKey::F12,
+            13 => NamedKey::F13,
+            14 => NamedKey::F14,
+            15 => NamedKey::F15,
+            16 => NamedKey::F16,
+            17 => NamedKey::F17,
+            18 => NamedKey::F18,
+            19 => NamedKey::F19,
+            20 => NamedKey::F20,
+            21 => NamedKey::F21,
+            22 => NamedKey::F22,
+            23 => NamedKey::F23,
+            24 => NamedKey::F24,
+            25 => NamedKey::F25,
+            26 => NamedKey::F26,
+            27 => NamedKey::F27,
+            28 => NamedKey::F28,
+            29 => NamedKey::F29,
+            30 => NamedKey::F30,
+            31 => NamedKey::F31,
+            32 => NamedKey::F32,
+            33 => NamedKey::F33,
+            34 => NamedKey::F34,
+            35 => NamedKey::F35,
+            _ => unreachable!(),
+        };
+        Some(Key::Named(key))
+    } else {
+        tracing::warn!("Received KeyCode::F({}) from crossterm (ignoring)", n);
+        None
+    }
+}
+
+fn translate_media_key_code(
+    key: crossterm::event::MediaKeyCode,
+) -> Option<crate::terminal::keyboard::Key> {
+    use crate::terminal::keyboard::{Key, NamedKey};
+    use crossterm::event::MediaKeyCode;
+
+    match key {
+        MediaKeyCode::Play => Some(Key::Named(crate::terminal::keyboard::NamedKey::MediaPlay)),
+        MediaKeyCode::Pause => Some(Key::Named(NamedKey::MediaPause)),
+        MediaKeyCode::PlayPause => Some(Key::Named(NamedKey::MediaPlayPause)),
+        MediaKeyCode::Reverse => {
+            tracing::warn!("Received MediaKeyCode::Reverse from crossterm (ignoring)");
+            None
+        }
+        MediaKeyCode::Stop => Some(Key::Named(NamedKey::MediaStop)),
+        MediaKeyCode::FastForward => Some(Key::Named(NamedKey::MediaFastForward)),
+        MediaKeyCode::Rewind => Some(Key::Named(NamedKey::MediaRewind)),
+        MediaKeyCode::TrackNext => Some(Key::Named(NamedKey::MediaTrackNext)),
+        MediaKeyCode::TrackPrevious => Some(Key::Named(NamedKey::MediaTrackPrevious)),
+        MediaKeyCode::Record => Some(Key::Named(NamedKey::MediaRecord)),
+        MediaKeyCode::LowerVolume => Some(Key::Named(NamedKey::AudioVolumeDown)),
+        MediaKeyCode::RaiseVolume => Some(Key::Named(NamedKey::AudioVolumeUp)),
+        MediaKeyCode::MuteVolume => Some(Key::Named(NamedKey::AudioVolumeMute)),
     }
 }
 

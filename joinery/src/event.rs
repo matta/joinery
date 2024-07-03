@@ -6,7 +6,10 @@
 use crate::dpi::{LogicalPosition, PhysicalPosition, PhysicalSize};
 // TODO - See issue https://github.com/linebender/xilem/issues/367
 use crate::kurbo::Rect;
-use crate::terminal::event::{KeyEvent, Modifiers, ModifiersState};
+use crate::terminal::{
+    event::{KeyEvent, Modifiers},
+    keyboard::ModifiersState,
+};
 use crate::WidgetId;
 
 use std::{collections::HashSet, path::PathBuf};
