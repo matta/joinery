@@ -248,5 +248,9 @@ pub enum AaConfig {
 
 pub mod util {
     pub struct RenderContext {}
-    pub struct RenderSurface {}
+    /// Combination of surface and its configuration.
+    #[derive(Debug)]
+    pub struct RenderSurface<'s> {
+        pub surface: ratatui::terminal::Frame<'s>,
+    }
 }

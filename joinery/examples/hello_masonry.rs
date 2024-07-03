@@ -11,7 +11,6 @@ use masonry::app_driver::{AppDriver, DriverCtx};
 use masonry::dpi::LogicalSize;
 use masonry::widget::{Button, Flex, Label, RootWidget};
 use masonry::{Action, WidgetId};
-use winit::window::Window;
 
 const VERTICAL_WIDGET_SPACING: f64 = 20.0;
 
@@ -41,14 +40,9 @@ pub fn main() {
         .with_child(button);
 
     let window_size = LogicalSize::new(400.0, 400.0);
-    let window_attributes = Window::default_attributes()
-        .with_title("Hello World!")
-        .with_resizable(true)
-        .with_min_inner_size(window_size);
 
     masonry::event_loop_runner::run(
         masonry::event_loop_runner::EventLoop::with_user_event(),
-        window_attributes,
         RootWidget::new(main_widget),
         Driver,
     )
