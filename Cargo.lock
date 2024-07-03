@@ -543,6 +543,38 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
 
 [[package]]
+name = "joinery"
+version = "0.2.0"
+dependencies = [
+ "accesskit",
+ "assert_matches",
+ "bitflags 2.6.0",
+ "cursor-icon",
+ "dpi",
+ "float-cmp",
+ "fnv",
+ "futures-intrusive",
+ "image",
+ "insta",
+ "kurbo",
+ "once_cell",
+ "parley",
+ "peniko",
+ "pollster",
+ "ratatui",
+ "serde",
+ "serde_json",
+ "smallvec",
+ "smol_str",
+ "tempfile",
+ "time",
+ "tracing",
+ "tracing-subscriber",
+ "unicode-segmentation",
+ "xi-unicode",
+]
+
+[[package]]
 name = "kurbo"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -605,38 +637,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d3262e75e648fce39813cb56ac41f3c3e3f65217ebf3844d818d1f9398cfb0dc"
 dependencies = [
  "hashbrown",
-]
-
-[[package]]
-name = "masonry"
-version = "0.2.0"
-dependencies = [
- "accesskit",
- "assert_matches",
- "bitflags 2.6.0",
- "cursor-icon",
- "dpi",
- "float-cmp",
- "fnv",
- "futures-intrusive",
- "image",
- "insta",
- "kurbo",
- "once_cell",
- "parley",
- "peniko",
- "pollster",
- "ratatui",
- "serde",
- "serde_json",
- "smallvec",
- "smol_str",
- "tempfile",
- "time",
- "tracing",
- "tracing-subscriber",
- "unicode-segmentation",
- "xi-unicode",
 ]
 
 [[package]]

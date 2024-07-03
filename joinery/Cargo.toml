@@ -1,5 +1,5 @@
 [package]
-name = "masonry"
+name = "joinery"
 version = "0.2.0"
 description = "Data-oriented Rust UI design toolkit."
 keywords = ["gui", "ui", "toolkit"]

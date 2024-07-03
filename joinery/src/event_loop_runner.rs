@@ -26,6 +26,7 @@ type EventLoopError = std::io::Error;
 struct MainState {
     render_root: RenderRoot,
     pointer_state: PointerState,
+    #[allow(dead_code)] // TODO: remove me
     app_driver: Box<dyn AppDriver>,
     terminal: Terminal<CrosstermBackend<std::io::Stdout>>,
     quit: bool,
