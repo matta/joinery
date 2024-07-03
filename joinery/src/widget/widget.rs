@@ -219,22 +219,6 @@ impl WidgetId {
         WidgetId(id.try_into().unwrap())
     }
 
-    // TODO - Remove
-    /// Create a reserved `WidgetId`, suitable for reuse.
-    ///
-    /// The caller is responsible for ensuring that this ID is in fact assigned
-    /// to a single widget at any time, or your code may become haunted.
-    ///
-    /// The actual inner representation of the returned `WidgetId` will not
-    /// be the same as the raw value that is passed in; it will be
-    /// `u64::max_value() - raw`.
-    #[allow(unsafe_code)]
-    pub const fn reserved(raw: u16) -> WidgetId {
-        let id = u64::MAX - raw as u64;
-        // safety: by construction this can never be zero.
-        WidgetId(unsafe { NonZeroU64::new_unchecked(id) })
-    }
-
     pub fn to_raw(self) -> u64 {
         self.0.into()
     }
