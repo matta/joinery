@@ -41,10 +41,5 @@ pub fn main() {
 
     let window_size = LogicalSize::new(400.0, 400.0);
 
-    masonry::event_loop_runner::run(
-        masonry::event_loop_runner::EventLoop::with_user_event(),
-        RootWidget::new(main_widget),
-        Driver,
-    )
-    .unwrap();
+    masonry::event_loop_runner::run(RootWidget::new(main_widget), Driver).unwrap();
 }

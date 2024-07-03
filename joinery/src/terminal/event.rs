@@ -156,15 +156,6 @@ impl Modifiers {
     }
 }
 
-impl From<ModifiersState> for Modifiers {
-    fn from(value: ModifiersState) -> Self {
-        Self {
-            state: value,
-            pressed_mods: Default::default(),
-        }
-    }
-}
-
 /// Describes the input state of a key.
 #[derive(Debug, Hash, PartialEq, Eq, Clone, Copy)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
