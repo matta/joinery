@@ -101,9 +101,9 @@ impl TextStorage for RichText {
 ///
 /// # Example
 /// ```
-/// # use masonry::text::{Attribute, RichTextBuilder};
-/// # use masonry::Color;
-/// # use masonry::piet::FontWeight;
+/// # use joinery::text::{Attribute, RichTextBuilder};
+/// # use joinery::Color;
+/// # use joinery::piet::FontWeight;
 /// let mut builder = RichTextBuilder::new();
 /// builder.push("Hello ");
 /// builder.push("World!").weight(FontWeight::BOLD);

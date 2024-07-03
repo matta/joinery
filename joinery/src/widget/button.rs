@@ -37,7 +37,7 @@ impl Button {
     /// # Examples
     ///
     /// ```
-    /// use masonry::widget::Button;
+    /// use joinery::widget::Button;
     ///
     /// let button = Button::new("Increment");
     /// ```
@@ -50,8 +50,8 @@ impl Button {
     /// # Examples
     ///
     /// ```
-    /// use masonry::Color;
-    /// use masonry::widget::{Button, Label};
+    /// use joinery::Color;
+    /// use joinery::widget::{Button, Label};
     ///
     /// let label = Label::new("Increment").with_text_brush(Color::rgb(0.5, 0.5, 0.5));
     /// let button = Button::from_label(label);

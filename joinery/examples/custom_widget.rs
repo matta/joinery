@@ -12,10 +12,10 @@ use crate::parley::style::{FontFamily, FontStack, StyleProperty};
 use crate::vello::Scene;
 use accesskit::Role;
 use kurbo::Stroke;
-use masonry::app_driver::{AppDriver, DriverCtx};
-use masonry::kurbo::BezPath;
-use masonry::widget::{FillStrat, RootWidget, WidgetRef};
-use masonry::{
+use joinery::app_driver::{AppDriver, DriverCtx};
+use joinery::kurbo::BezPath;
+use joinery::widget::{FillStrat, RootWidget, WidgetRef};
+use joinery::{
     AccessCtx, AccessEvent, Action, Affine, BoxConstraints, Color, EventCtx, LayoutCtx, LifeCycle,
     LifeCycleCtx, PaintCtx, Point, PointerEvent, Rect, Size, StatusChange, TextEvent, Widget,
     WidgetId,

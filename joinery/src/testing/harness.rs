@@ -74,14 +74,14 @@ pub const HARNESS_DEFAULT_BACKGROUND_COLOR: Color = Color::rgb8(0x29, 0x29, 0x29
 /// ```
 /// use insta::assert_debug_snapshot;
 ///
-/// use masonry::PointerButton;
-/// use masonry::widget::Button;
-/// use masonry::Action;
-/// use masonry::assert_render_snapshot;
-/// use masonry::testing::widget_ids;
-/// use masonry::testing::TestHarness;
-/// use masonry::testing::TestWidgetExt;
-/// use masonry::theme::PRIMARY_LIGHT;
+/// use joinery::PointerButton;
+/// use joinery::widget::Button;
+/// use joinery::Action;
+/// use joinery::assert_render_snapshot;
+/// use joinery::testing::widget_ids;
+/// use joinery::testing::TestHarness;
+/// use joinery::testing::TestWidgetExt;
+/// use joinery::theme::PRIMARY_LIGHT;
 ///
 /// # /*
 /// #[test]

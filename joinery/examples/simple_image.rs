@@ -8,10 +8,10 @@
 // On Windows platform, don't show a console when opening the app.
 #![windows_subsystem = "windows"]
 
-use masonry::app_driver::{AppDriver, DriverCtx};
-use masonry::dpi::LogicalSize;
-use masonry::widget::{FillStrat, Image, RootWidget};
-use masonry::{Action, WidgetId};
+use joinery::app_driver::{AppDriver, DriverCtx};
+use joinery::dpi::LogicalSize;
+use joinery::widget::{FillStrat, Image, RootWidget};
+use joinery::{Action, WidgetId};
 use peniko::{Format, Image as ImageBuf};
 use winit::window::Window;
 

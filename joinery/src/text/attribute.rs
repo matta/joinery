@@ -62,8 +62,8 @@ struct Span<T> {
 /// # Examples
 ///
 /// ```no_run
-/// use masonry::text::Attribute;
-/// use masonry::{theme, Color};
+/// use joinery::text::Attribute;
+/// use joinery::{theme, Color};
 ///
 /// let font = Attribute::font_descriptor(theme::UI_FONT);
 /// let font_size = Attribute::size(32.0);

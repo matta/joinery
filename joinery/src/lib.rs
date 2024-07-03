@@ -14,10 +14,10 @@
 //! The to-do-list example looks like this:
 //!
 //! ```
-//! use masonry::app_driver::{AppDriver, DriverCtx};
-//! use masonry::dpi::LogicalSize;
-//! use masonry::widget::{Button, Flex, Label, Portal, RootWidget, Textbox, WidgetMut};
-//! use masonry::{Action, WidgetId};
+//! use joinery::app_driver::{AppDriver, DriverCtx};
+//! use joinery::dpi::LogicalSize;
+//! use joinery::widget::{Button, Flex, Label, Portal, RootWidget, Textbox, WidgetMut};
+//! use joinery::{Action, WidgetId};
 //! use winit::window::Window;
 //!
 //! const VERTICAL_WIDGET_SPACING: f64 = 20.0;
@@ -76,7 +76,7 @@
 //! [winit]: https://crates.io/crates/winit
 //! [Druid]: https://crates.io/crates/druid
 
-#![deny(unsafe_code, clippy::trivially_copy_pass_by_ref)]
+#![deny(clippy::trivially_copy_pass_by_ref)]
 // #![deny(rustdoc::broken_intra_doc_links)]
 // #![warn(missing_docs)]
 #![warn(unused_imports)]

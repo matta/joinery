@@ -65,10 +65,10 @@ pub struct ReplaceChild {
 /// Make one like this:
 ///
 /// ```
-/// # use masonry::widget::Label;
-/// # use masonry::LifeCycle;
-/// use masonry::testing::{Recording, Record, TestWidgetExt};
-/// use masonry::testing::TestHarness;
+/// # use joinery::widget::Label;
+/// # use joinery::LifeCycle;
+/// use joinery::testing::{Recording, Record, TestWidgetExt};
+/// use joinery::testing::TestHarness;
 /// let recording = Recording::default();
 /// let widget = Label::new("Hello").record(&recording);
 ///

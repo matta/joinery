@@ -7,9 +7,9 @@
 // On Windows platform, don't show a console when opening the app.
 #![windows_subsystem = "windows"]
 
-use masonry::app_driver::{AppDriver, DriverCtx};
-use masonry::widget::{Button, Flex, Label, RootWidget};
-use masonry::{Action, WidgetId};
+use joinery::app_driver::{AppDriver, DriverCtx};
+use joinery::widget::{Button, Flex, Label, RootWidget};
+use joinery::{Action, WidgetId};
 
 const VERTICAL_WIDGET_SPACING: f64 = 20.0;
 
@@ -38,5 +38,5 @@ pub fn main() {
         .with_spacer(VERTICAL_WIDGET_SPACING)
         .with_child(button);
 
-    masonry::event_loop_runner::run(RootWidget::new(main_widget), Driver).unwrap();
+    joinery::event_loop_runner::run(RootWidget::new(main_widget), Driver).unwrap();
 }
