@@ -11,7 +11,6 @@ use crate::parley::layout::Alignment;
 use crate::parley::style::{FontFamily, FontStack, StyleProperty};
 use crate::vello::Scene;
 use accesskit::Role;
-use kurbo::Stroke;
 use joinery::app_driver::{AppDriver, DriverCtx};
 use joinery::kurbo::BezPath;
 use joinery::widget::{FillStrat, RootWidget, WidgetRef};
@@ -20,6 +19,7 @@ use joinery::{
     LifeCycleCtx, PaintCtx, Point, PointerEvent, Rect, Size, StatusChange, TextEvent, Widget,
     WidgetId,
 };
+use kurbo::Stroke;
 use peniko::{Brush, Fill, Format, Image};
 use smallvec::SmallVec;
 use tracing::{trace_span, Span};
