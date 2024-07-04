@@ -1,0 +1,9 @@
+#!/usr/bin/bash
+
+set -x
+
+file="$1"
+root=$(git rev-parse --show-toplevel)
+rel_right="$(git ls-files --full-name "$file")"
+rel_left="$(echo "$rel_right" | sed -e 's,joinery/,masonry/,')"
+meld "$HOME/git/xilem/$rel_left" "$file"
