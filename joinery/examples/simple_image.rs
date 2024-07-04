@@ -9,11 +9,9 @@
 #![windows_subsystem = "windows"]
 
 use joinery::app_driver::{AppDriver, DriverCtx};
-use joinery::dpi::LogicalSize;
 use joinery::widget::{FillStrat, Image, RootWidget};
 use joinery::{Action, WidgetId};
 use peniko::{Format, Image as ImageBuf};
-use winit::window::Window;
 
 struct Driver;
 
@@ -28,17 +26,5 @@ pub fn main() {
     let png_data = ImageBuf::new(image_data.to_vec().into(), Format::Rgba8, width, height);
     let image = Image::new(png_data).fill_mode(FillStrat::Contain);
 
-    let window_size = LogicalSize::new(650.0, 450.0);
-    let window_attributes = Window::default_attributes()
-        .with_title("Simple image example")
-        .with_min_inner_size(window_size)
-        .with_max_inner_size(window_size);
-
-    masonry::event_loop_runner::run(
-        masonry::event_loop_runner::EventLoop::with_user_event(),
-        window_attributes,
-        RootWidget::new(image),
-        Driver,
-    )
-    .unwrap();
+    joinery::event_loop_runner::run(RootWidget::new(image), Driver).unwrap();
 }

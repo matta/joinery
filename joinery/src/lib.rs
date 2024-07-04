@@ -92,7 +92,7 @@ pub use dpi;
 pub use kurbo;
 
 // TODO: hack impersonate various things
-mod vello;
+pub mod vello;
 
 #[macro_use]
 mod util;

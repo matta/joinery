@@ -5,14 +5,12 @@
 
 // On Windows platform, don't show a console when opening the app.
 #![windows_subsystem = "windows"]
-#![allow(clippy::single_match)]
 
 use std::sync::Arc;
 
-use crate::vello::Scene;
 use accesskit::{DefaultActionVerb, Role};
 use joinery::app_driver::{AppDriver, DriverCtx};
-use joinery::dpi::LogicalSize;
+use joinery::vello::Scene;
 use joinery::widget::{Align, CrossAxisAlignment, Flex, Label, RootWidget, SizedBox, WidgetRef};
 use joinery::{
     AccessCtx, AccessEvent, Action, BoxConstraints, Color, EventCtx, LayoutCtx, LifeCycle,
@@ -21,7 +19,6 @@ use joinery::{
 };
 use smallvec::{smallvec, SmallVec};
 use tracing::{trace, trace_span, Span};
-use winit::window::Window;
 
 #[derive(Clone)]
 struct CalcState {
@@ -174,12 +171,9 @@ impl Widget for CalcButton {
 
     fn on_access_event(&mut self, ctx: &mut EventCtx, event: &AccessEvent) {
         if event.target == ctx.widget_id() {
-            match event.action {
-                accesskit::Action::Default => {
-                    ctx.submit_action(Action::Other(Arc::new(self.action)));
-                    ctx.request_paint();
-                }
-                _ => {}
+            if let accesskit::Action::Default = event.action {
+                ctx.submit_action(Action::Other(Arc::new(self.action)));
+                ctx.request_paint();
             }
         }
         ctx.skip_child(&mut self.inner);
@@ -370,13 +364,6 @@ fn build_calc() -> impl Widget {
 }
 
 pub fn main() {
-    let window_size = LogicalSize::new(223., 300.);
-
-    let window_attributes = Window::default_attributes()
-        .with_title("Simple Calculator")
-        .with_resizable(true)
-        .with_min_inner_size(window_size);
-
     let calc_state = CalcState {
         value: "0".to_string(),
         operand: 0.0,
@@ -384,11 +371,5 @@ pub fn main() {
         in_num: false,
     };
 
-    masonry::event_loop_runner::run(
-        masonry::event_loop_runner::EventLoop::with_user_event(),
-        window_attributes,
-        RootWidget::new(build_calc()),
-        calc_state,
-    )
-    .unwrap();
+    joinery::event_loop_runner::run(RootWidget::new(build_calc()), calc_state).unwrap();
 }

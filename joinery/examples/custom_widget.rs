@@ -7,12 +7,11 @@
 // On Windows platform, don't show a console when opening the app.
 #![windows_subsystem = "windows"]
 
-use crate::parley::layout::Alignment;
-use crate::parley::style::{FontFamily, FontStack, StyleProperty};
-use crate::vello::Scene;
 use accesskit::Role;
 use joinery::app_driver::{AppDriver, DriverCtx};
 use joinery::kurbo::BezPath;
+use joinery::vello::peniko::{Brush, Fill, Format, Image};
+use joinery::vello::Scene;
 use joinery::widget::{FillStrat, RootWidget, WidgetRef};
 use joinery::{
     AccessCtx, AccessEvent, Action, Affine, BoxConstraints, Color, EventCtx, LayoutCtx, LifeCycle,
@@ -20,10 +19,10 @@ use joinery::{
     WidgetId,
 };
 use kurbo::Stroke;
-use peniko::{Brush, Fill, Format, Image};
+use parley::layout::Alignment;
+use parley::style::{FontFamily, FontStack, StyleProperty};
 use smallvec::SmallVec;
 use tracing::{trace_span, Span};
-use winit::window::Window;
 
 struct Driver;
 
@@ -115,7 +114,7 @@ impl Widget for CustomWidget {
 
         let mut scratch_scene = Scene::new();
         // We can pass a transform matrix to rotate the text we render
-        masonry::text_helpers::render_text(
+        joinery::text_helpers::render_text(
             scene,
             &mut scratch_scene,
             Affine::rotate(std::f64::consts::FRAC_PI_4).then_translate((80.0, 40.0).into()),
@@ -151,15 +150,7 @@ impl Widget for CustomWidget {
 
 pub fn main() {
     let my_string = "Masonry + Vello".to_string();
-    let window_attributes = Window::default_attributes().with_title("Fancy colors");
-
-    masonry::event_loop_runner::run(
-        masonry::event_loop_runner::EventLoop::with_user_event(),
-        window_attributes,
-        RootWidget::new(CustomWidget(my_string)),
-        Driver,
-    )
-    .unwrap();
+    joinery::event_loop_runner::run(RootWidget::new(CustomWidget(my_string)), Driver).unwrap();
 }
 
 fn make_image_data(width: usize, height: usize) -> Vec<u8> {
