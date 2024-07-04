@@ -1,6 +1,8 @@
 <div align="center">
 
-= Warning: This repo is an experimental and personal hack
+# Warning
+
+**This repo is an experimental and personal hack**
 
 </div>
 
