@@ -39,7 +39,7 @@ accesskit.workspace = true
 time = { version = "0.3.36", features = ["macros", "formatting"] }
 cursor-icon = "1.1.0"
 dpi.workspace = true
-ratatui = "0.27.0"
+ratatui = "0.28.0"
 bitflags.workspace = true
 smol_str = "0.2.2"
 
